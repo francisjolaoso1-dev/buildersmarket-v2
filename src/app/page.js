@@ -9,9 +9,9 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('market');
   const [selectedCategory, setSelectedCategory] = useState('All');
   
-  // Tracking Engine States
+  // Tracking States
   const [invoiceConfirmed, setInvoiceConfirmed] = useState(false);
-  const [trackingStep, setTrackingStep] = useState(1); // Steps 1 to 4
+  const [trackingStep, setTrackingStep] = useState(1); 
 
   const PRODUCTS = [
     { id: 1, name: 'Industrial Borehole Submersible Pump (2HP)', category: 'Plumbing', ngn: '₦210,000', usd: '$131.00', dutyNgn: '₦14,700', dutyUsd: '$9.17', totalNgn: '₦224,700', totalUsd: '$140.17', origin: 'Guangdong Shipping Depot', type: 'CHINA IMPORTED', color: '#e53e3e', bg: '#fff5f5', icon: '🚰' },
@@ -21,7 +21,7 @@ export default function Home() {
     { id: 5, name: 'Casement Aluminum Window Profiles (Standard)', category: 'Aluminum', ngn: '₦45,000', usd: '$28.12', dutyNgn: '₦3,150', dutyUsd: '$1.97', totalNgn: '₦48,150', totalUsd: '$30.09', origin: 'Guangdong Factory Direct', type: 'CHINA IMPORTED', color: '#e53e3e', bg: '#fff5f5', icon: '🪟' },
     { id: 6, name: 'Deep-Well Hydraulic Drilling Control Panel', category: 'Drilling', ngn: '₦1,440,000', usd: '$900.00', dutyNgn: '₦100,800', dutyUsd: '$63.00', totalNgn: '₦1,540,800', totalUsd: '$963.00', origin: 'Shandong Port Zone', type: 'CHINA IMPORTED', color: '#e53e3e', bg: '#fff5f5', icon: '🎛️' },
     { id: 7, name: 'High-Pressure PPR Plumbing Pipes (Pack of 50)', category: 'Plumbing', ngn: '₦120,000', usd: '$75.00', dutyNgn: '₦8,400', dutyUsd: '$5.25', totalNgn: '₦128,400', totalUsd: '$80.25', origin: 'Abuja Central Warehouse', type: 'LOCAL DISTRIBUTOR', color: '#16a34a', bg: '#f0fdf4', icon: '🧪' },
-    { id: 8, name: 'Portland Cement Grade 42.5R (Bulk Ton)', category: 'Structural', ngn: '₦96,000', usd: '$60.00', dutyNgn: '₦6,720', dutyUsd: '$4.20', totalNgn: '₦102,720', totalUsd: '$64.20', origin: 'Lagos Port Depot', type: 'LOCAL DISTRIBUTOR', color: '#16a34a', bg: '#f0fdf4', icon: '🧱' }
+    { id: 8, name: 'Portland Cement Grade 42.5R (Bulk Ton)', category: 'Structural', ngn: '₦96,000', usd: '$60.00', dutyNgn: '₦6,720', dutyUsd: '#4.20', totalNgn: '₦102,720', totalUsd: '$64.20', origin: 'Lagos Port Depot', type: 'LOCAL DISTRIBUTOR', color: '#16a34a', bg: '#f0fdf4', icon: '🧱' }
   ];
 
   const filteredProducts = PRODUCTS.filter(product => {
@@ -33,7 +33,7 @@ export default function Home() {
   return (
     <div style={{ fontFamily: 'system-ui, sans-serif', backgroundColor: '#f9fafb', minHeight: '100vh', color: '#111827' }}>
       
-      {/* NAVIGATION BAR */}
+      {/* HEADER NAVBAR */}
       <header style={{ backgroundColor: '#ffffff', borderBottom: '1px solid #e5e7eb', padding: '15px 30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{ fontSize: '26px' }}>🏗️</span>
@@ -55,7 +55,7 @@ export default function Home() {
 
       {activeTab === 'market' ? (
         <>
-          {/* HERO CONSOLE */}
+          {/* HERO DASHBOARD CONTAINER */}
           <section style={{ backgroundColor: '#111827', color: '#ffffff', padding: '50px 20px', textAlign: 'center' }}>
             <h1 style={{ fontSize: '34px', fontWeight: '800', marginBottom: '10px' }}>Global Procurement Matrix</h1>
             <p style={{ fontSize: '15px', color: '#9ca3af', maxWidth: '650px', margin: '0 auto 25px' }}>
@@ -74,7 +74,7 @@ export default function Home() {
             </div>
           </section>
 
-          {/* GRID RENDERER */}
+          {/* GRID INVENTORY */}
           <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '25px' }}>
               {filteredProducts.map((product) => (
@@ -103,7 +103,7 @@ export default function Home() {
           </main>
         </>
       ) : (
-        /* FACTORY PORTAL PLACEHOLDER */
+        /* FACTORY ENTRY PANEL */
         <main style={{ maxWidth: '500px', margin: '40px auto', padding: '25px', backgroundColor: '#ffffff', borderRadius: '10px', border: '1px solid #e5e7eb' }}>
           <h2 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '6px' }}>Global Plant Onboarding</h2>
           <form onSubmit={(e) => { e.preventDefault(); alert('Indexed.'); }} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -113,10 +113,10 @@ export default function Home() {
         </main>
       )}
 
-      {/* OVERLAY PROFORMA & TRACKING TIMELINE MODAL */}
+      {/* SECURE LIGHTWEIGHT MODAL WINDOW */}
       {showModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(11,24,39,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ backgroundColor: '#ffffff', padding: '25px', borderRadius: '12px', maxWidth: '460px', width: '100%', margin: '20px', position: 'relative', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
+          <div style={{ backgroundColor: '#ffffff', padding: '25px', borderRadius: '12px', maxWidth: '440px', width: '100%', margin: '20px', position: 'relative', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
             <button onClick={() => setShowModal(false)} style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', color: '#9ca3af' }}>✕</button>
             
             {!invoiceConfirmed ? (
@@ -145,45 +145,59 @@ export default function Home() {
             ) : (
               <>
                 <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '4px' }}>Procurement Tracking Node</h3>
-                <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '20px' }}>Real-time freight cargo telemetry ledger for your order.</p>
+                <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '25px' }}>Real-time freight cargo telemetry ledger for your order.</p>
 
-                {/* 🚚 INTERACTIVE STEP-BAR COMPONENT */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', marginBottom: '25px', padding: '0 10px' }}>
-                  
-                  {/* Gray Background Line */}
-                  <div style={{ position: 'absolute', top: '14px', left: '30px', right: '30px', height: '4px', backgroundColor: '#e5e7eb', zIndex: 1 }} />
-                  
-                  {/* Colored Active Progress Line */}
-                  <div style={{ position: 'absolute', top: '14px', left: '30px', width: trackingStep === 1 ? '0%' : trackingStep === 2 ? '33%' : trackingStep === 3 ? '66%' : '92%', height: '4px', backgroundColor: '#16a34a', transition: 'all 0.4s ease', zIndex: 2 }} />
-
-                  {/* Step 1 Node */}
-                  <div style={{ zIndex: 3, textAlign: 'center', width: '60px' }}>
-                    <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: trackingStep >= 1 ? '#16a34a' : '#e5e7eb', color: trackingStep >= 1 ? '#fff' : '#6b7280', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto', fontSize: '12px', fontWeight: '700', transition: 'background-color 0.3s' }}>1</div>
-                    <span style={{ fontSize: '10px', fontWeight: '700', display: 'block', marginTop: '6px', color: trackingStep >= 1 ? '#111827' : '#9ca3af' }}>Factory</span>
-                  </div>
-
-                  {/* Step 2 Node */}
-                  <div style={{ zIndex: 3, textAlign: 'center', width: '60px' }}>
-                    <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: trackingStep >= 2 ? '#16a34a' : '#e5e7eb', color: trackingStep >= 2 ? '#fff' : '#6b7280', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto', fontSize: '12px', fontWeight: '700', transition: 'background-color 0.3s' }}>2</div>
-                    <span style={{ fontSize: '10px', fontWeight: '700', display: 'block', marginTop: '6px', color: trackingStep >= 2 ? '#111827' : '#9ca3af' }}>Transit</span>
-                  </div>
-
-                  {/* Step 3 Node */}
-                  <div style={{ zIndex: 3, textAlign: 'center', width: '60px' }}>
-                    <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: trackingStep >= 3 ? '#16a34a' : '#e5e7eb', color: trackingStep >= 3 ? '#fff' : '#6b7280', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto', fontSize: '12px', fontWeight: '700', transition: 'background-color 0.3s' }}>3</div>
-                    <span style={{ fontSize: '10px', fontWeight: '700', display: 'block', marginTop: '6px', color: trackingStep >= 3 ? '#111827' : '#9ca3af' }}>Clearing</span>
-                  </div>
-
-                  {/* Step 4 Node */}
-                  <div style={{ zIndex: 3, textAlign: 'center', width: '60px' }}>
-                    <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: trackingStep >= 4 ? '#16a34a' : '#e5e7eb', color: trackingStep >= 4 ? '#fff' : '#6b7280', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto', fontSize: '12px', fontWeight: '700', transition: 'background-color 0.3s' }}>4</div>
-                    <span style={{ fontSize: '10px', fontWeight: '700', display: 'block', marginTop: '6px', color: trackingStep >= 4 ? '#111827' : '#9ca3af' }}>Arrived</span>
-                  </div>
-
+                {/* COMPILER-SAFE FLEX STEP TIMELINE */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '4px', marginBottom: '25px' }}>
+                  <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 1 ? '#16a34a' : '#e5e7eb' }} />
+                  <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 2 ? '#16a34a' : '#e5e7eb' }} />
+                  <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 3 ? '#16a34a' : '#e5e7eb' }} />
+                  <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 4 ? '#16a34a' : '#e5e7eb' }} />
                 </div>
 
-                {/* Status Update Information Window */}
-                <div style={{ backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', padding: '15px', borderRadius: '8px', marginBottom: '20px', fontSize: '13px' }}>
+                {/* TEXTUAL STEPS */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: '700', marginBottom: '20px', color: '#6b7280' }}>
+                  <span style={{ color: trackingStep === 1 ? '#16a34a' : '#6b7280' }}>1. Factory</span>
+                  <span style={{ color: trackingStep === 2 ? '#16a34a' : '#6b7280' }}>2. Transit</span>
+                  <span style={{ color: trackingStep === 3 ? '#16a34a' : '#6b7280' }}>3. Clearing</span>
+                  <span style={{ color: trackingStep === 4 ? '#16a34a' : '#6b7280' }}>4. Arrived</span>
+                </div>
+
+                {/* DETAIL INFORMATION WINDOW */}
+                <div style={{ backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', padding: '15px', borderRadius: '8px', marginBottom: '25px', fontSize: '13px' }}>
                   {trackingStep === 1 && <div>🏭 <strong>Stage 1: Factory Production</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Your materials are currently being crated, serialized, and balanced for container weight metrics at the manufacturing hub.</p></div>}
                   {trackingStep === 2 && <div>🚢 <strong>Stage 2: Ocean Freight Transit</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Cargo assigned to global vessel lanes. Moving securely across main shipping corridors toward the Nigerian entry port.</p></div>}
-                  {trackingStep === 3 && <div>🛃 <strong>Stage 3: Customs Duty Clearing</strong><p style={{ margin: '4px
+                  {trackingStep === 3 && <div>🛃 <strong>Stage 3: Customs Duty Clearing</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Manifest matching protocols initiated. Port tariff calculations and clearing documentation are undergoing official approval.</p></div>}
+                  {trackingStep === 4 && <div>✅ <strong>Stage 4: Ready for Delivery/Pickup</strong><p style={{ margin: '4px 0 0', color: '#16a34a', fontSize: '12px', fontWeight: '600' }}>Asset clearance complete! Items are stored securely at destination yards and ready for logistics dispatch handlers.</p></div>}
+                </div>
+
+                {/* SIMULATOR STEP CONTROLS */}
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+                  <button 
+                    disabled={trackingStep === 1}
+                    onClick={() => setTrackingStep(prev => prev - 1)}
+                    style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #d1d5db', cursor: 'pointer', fontSize: '12px', fontWeight: '600', backgroundColor: '#fff' }}
+                  >
+                    ⏮️ Prev Stage
+                  </button>
+                  <button 
+                    disabled={trackingStep === 4}
+                    onClick={() => setTrackingStep(prev => prev + 1)}
+                    style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: '600', backgroundColor: '#111827', color: '#fff' }}
+                  >
+                    Next Stage ⏭️
+                  </button>
+                </div>
+
+                <button onClick={() => setShowModal(false)} style={{ width: '100%', backgroundColor: '#6b7280', color: 'white', padding: '10px', borderRadius: '6px', fontWeight: '600', border: 'none', cursor: 'pointer', fontSize: '13px' }}>
+                  Close Console
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}
