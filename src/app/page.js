@@ -19,16 +19,16 @@ export default function Home() {
   const [corpDetails, setCorpDetails] = useState({ companyName: '', tinNumber: '', poNumber: '' });
 
   // AUTHENTICATION STATES
-  const [currentUser, setCurrentUser] = useState(null); // Holds logged-in user data
+  const [currentUser, setCurrentUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authView, setAuthView] = useState('login'); // 'login' or 'register'
+  const [authView, setAuthView] = useState('login');
   
   // Auth Form State
   const [authForm, setAuthForm] = useState({
     fullName: '',
     email: '',
     password: '',
-    accountType: 'individual', // default tier
+    accountType: 'individual',
     companyName: '',
     tinNumber: ''
   });
@@ -45,7 +45,7 @@ export default function Home() {
 
   const [formData, setFormData] = useState({ name: '', category: 'Prefab Structural', baseNgn: '', origin: '', type: 'CHINA IMPORTED' });
 
-  // Handle User Registration / Login Mock Processing
+  // Handle User Registration / Login
   const handleAuthSubmit = (e) => {
     e.preventDefault();
     if (authView === 'register') {
@@ -57,16 +57,14 @@ export default function Home() {
         tinNumber: authForm.tinNumber
       };
       setCurrentUser(newUser);
-      // Auto-set the checkout profile preferences based on registered tier
       setProcurementMode(authForm.accountType);
       if (authForm.accountType === 'corporate') {
         setCorpDetails({ companyName: authForm.companyName, tinNumber: authForm.tinNumber, poNumber: '' });
       }
-      alert(`Account created successfully! Welcome to buildersmarket, ${newUser.name}.`);
+      alert(`Account created successfully! Welcome, ${newUser.name}.`);
     } else {
-      // Mock Login
       const mockUser = {
-        name: authForm.email.split('@')[0],
+        name: authForm.email ? authForm.email.split('@')[0] : 'Builder',
         email: authForm.email,
         accountType: 'individual'
       };
@@ -84,7 +82,11 @@ export default function Home() {
   };
 
   const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) || product.origin.toLowerCase().includes(searchTerm.toLowerCase());
+    const productName = product.name ? product.name.toLowerCase() : '';
+    const productOrigin = product.origin ? product.origin.toLowerCase() : '';
+    const query = searchTerm.toLowerCase();
+    
+    const matchesSearch = productName.includes(query) || productOrigin.includes(query);
     const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -123,6 +125,7 @@ export default function Home() {
   };
 
   const handlePrintMock = () => {
+    if (!modalItem) return;
     alert(`--- OFFICIAL PROFORMA INVOICE GENERATED ---\nCustomer: ${currentUser ? currentUser.name : 'Guest'}\nCustomer Type: ${procurementMode.toUpperCase()}\n${procurementMode === 'corporate' ? `Company: ${corpDetails.companyName}\nTIN: ${corpDetails.tinNumber}\nPO Ref: ${corpDetails.poNumber || 'N/A'}\n` : ''}Item: ${modalItem.name}\nTotal Due: ${viewMode === 'NGN' ? modalItem.totalNgn : modalItem.totalUsd}\n\nProforma generated successfully!`);
   };
 
@@ -153,11 +156,10 @@ export default function Home() {
             <button onClick={() => setViewMode('USD')} style={{ border: 'none', padding: '5px 12px', borderRadius: '16px', cursor: 'pointer', fontWeight: '700', fontSize: '12px', backgroundColor: viewMode === 'USD' ? '#111827' : 'transparent', color: viewMode === 'USD' ? '#ffffff' : '#4b5563' }}>$ USD</button>
           </div>
 
-          {/* DYNAMIC USER LOGGED IN STATE DISPLAY */}
           {currentUser ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderLeft: '1px solid #e5e7eb', paddingLeft: '15px' }}>
               <span style={{ fontSize: '13px', fontWeight: '600' }}>
-                👋 {currentUser.name} <span style={{ fontSize: '10px', backgroundColor: currentUser.accountType === 'corporate' ? '#dbffe4' : '#e5e7eb', color: currentUser.accountType === 'corporate' ? '#15803d' : '#111827', padding: '2px 6px', borderRadius: '10px', marginLeft: '4px', fontWeight: '800' }}>{currentUser.accountType.toUpperCase()}</span>
+                👋 {currentUser.name} <span style={{ fontSize: '10px', backgroundColor: currentUser.accountType === 'corporate' ? '#dbffe4' : '#e5e7eb', color: currentUser.accountType === 'corporate' ? '#15803d' : '#111827', padding: '2px 6px', borderRadius: '10px', marginLeft: '4px', fontWeight: '800' }}>{(currentUser.accountType || 'individual').toUpperCase()}</span>
               </span>
               <button onClick={handleLogout} style={{ background: 'none', border: '1px solid #d1d5db', padding: '5px 10px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', fontWeight: '600' }}>Logout</button>
             </div>
@@ -202,4 +204,34 @@ export default function Home() {
                   </div>
 
                   <div style={{ padding: '20px', flexGrow: 1 }}>
-                    <span style={{ fontSize: '10px', textTransform: 'uppercase', color: '#4b5563', fontWeight: '700', backgroundColor: '#e5e
+                    <span style={{ fontSize: '10px', textTransform: 'uppercase', color: '#4b5563', fontWeight: '700', backgroundColor: '#e5e7eb', padding: '3px 6px', borderRadius: '4px' }}>{product.category}</span>
+                    <h3 style={{ fontSize: '15px', fontWeight: '700', marginTop: '10px', marginBottom: '6px', minHeight: '42px' }}>{product.name}</h3>
+                    <div style={{ fontSize: '13px', color: '#6b7280' }}>📍 Fulfillment: <strong>{product.origin}</strong></div>
+                  </div>
+
+                  <div style={{ padding: '0 20px 20px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f3f4f6', paddingTop: '15px' }}>
+                    <div>
+                      <span style={{ fontSize: '16px', fontWeight: '800', color: '#111827' }}>{viewMode === 'NGN' ? product.ngn : product.usd}</span>
+                      <span style={{ fontSize: '11px', color: '#6b7280', display: 'block' }}>FOB Base Price</span>
+                    </div>
+                    <button onClick={() => { 
+                      setModalItem(product); 
+                      setInvoiceConfirmed(false); 
+                      setTrackingStep(1); 
+                      setProcurementMode(currentUser ? currentUser.accountType : 'individual');
+                      setShowModal(true); 
+                    }} style={{ backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '9px 14px', borderRadius: '6px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}>Request Invoice</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </main>
+        </>
+      ) : (
+        /* FACTORY PORTAL */
+        <main style={{ maxWidth: '540px', margin: '40px auto', padding: '30px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+          <h2 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '4px' }}>Global Asset Onboarding</h2>
+          <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '20px' }}>Deploy blueprints or equipment directly to the front-facing matrix.</p>
+          <form onSubmit={handleOnboardAsset} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <input type="text" placeholder="Asset/Product Title" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required style={{ width: '100%', padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '14px' }} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px
