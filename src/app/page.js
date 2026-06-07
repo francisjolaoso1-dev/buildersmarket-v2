@@ -3,8 +3,9 @@ import { useState } from 'react';
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [viewMode, setViewMode] = useState('NGN'); // NGN or USD
+  const [viewMode, setViewMode] = useState('NGN'); // Dictates NGN or USD globally
   const [showModal, setShowModal] = useState(false);
+  const [modalItem, setModalItem] = useState({ name: '', ngn: '', usd: '', origin: '' });
   const [activeTab, setActiveTab] = useState('market'); // market or supplier
 
   return (
@@ -23,16 +24,27 @@ export default function Home() {
           <button onClick={() => setActiveTab('market')} style={{ background: 'none', border: 'none', color: activeTab === 'market' ? '#16a34a' : '#4b5563', fontWeight: '600', cursor: 'pointer' }}>Marketplace</button>
           <button onClick={() => setActiveTab('supplier')} style={{ background: 'none', border: 'none', color: activeTab === 'supplier' ? '#16a34a' : '#4b5563', fontWeight: '600', cursor: 'pointer' }}>🇨🇳 Factory Portal</button>
           
-          <button onClick={() => setViewMode(viewMode === 'NGN' ? 'USD' : 'NGN')} style={{ backgroundColor: '#111827', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '20px', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>
-            Currency: {viewMode}
-          </button>
+          {/* SIDE-BY-SIDE DUAL CURRENCY TOGGLE */}
+          <div style={{ border: '1px solid #d1d5db', borderRadius: '20px', padding: '3px', display: 'flex', backgroundColor: '#f3f4f6' }}>
+            <button 
+              onClick={() => setViewMode('NGN')} 
+              style={{ border: 'none', padding: '5px 12px', borderRadius: '16px', cursor: 'pointer', fontWeight: '700', fontSize: '12px', backgroundColor: viewMode === 'NGN' ? '#111827' : 'transparent', color: viewMode === 'NGN' ? '#ffffff' : '#4b5563' }}
+            >
+              ₦ NGN
+            </button>
+            <button 
+              onClick={() => setViewMode('USD')} 
+              style={{ border: 'none', padding: '5px 12px', borderRadius: '16px', cursor: 'pointer', fontWeight: '700', fontSize: '12px', backgroundColor: viewMode === 'USD' ? '#111827' : 'transparent', color: viewMode === 'USD' ? '#ffffff' : '#4b5563' }}
+            >
+              $ USD
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* CORE DISPLAY LOGIC BLOCK */}
       {activeTab === 'market' ? (
         <>
-          {/* HERO HEADER DISPLAY */}
+          {/* HERO DISPLAY */}
           <section style={{ backgroundColor: '#111827', color: '#ffffff', padding: '45px 20px', textAlign: 'center' }}>
             <h1 style={{ fontSize: '32px', fontWeight: '800', marginBottom: '10px' }}>Global Construction Supply Portal</h1>
             <p style={{ fontSize: '15px', color: '#9ca3af', maxWidth: '600px', margin: '0 auto 20px' }}>
@@ -49,33 +61,55 @@ export default function Home() {
             </div>
           </section>
 
-          {/* STANDALONE GRID MATRIX */}
+          {/* DYNAMIC PRICE CARDS GRID */}
           <main style={{ maxWidth: '1100px', margin: '0 auto', padding: '30px 20px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '20px' }}>
               
-              {/* CARD ITEM 1 */}
+              {/* CARD ITEM 1: CHINA PUMP */}
               <div style={{ backgroundColor: '#ffffff', borderRadius: '10px', border: '1px solid #e5e7eb', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
-                  <span style={{ fontSize: '11px', fontWeight: '700', color: '#16a34a', backgroundColor: '#f0fdf4', padding: '4px 8px', borderRadius: '4px' }}>CHINA IMPORTED</span>
+                  <span style={{ fontSize: '11px', fontWeight: '700', color: '#e53e3e', backgroundColor: '#fff5f5', padding: '4px 8px', borderRadius: '4px' }}>CHINA IMPORTED</span>
                   <h3 style={{ fontSize: '16px', fontWeight: '700', marginTop: '12px' }}>Industrial Borehole Submersible Pump (2HP)</h3>
                   <p style={{ fontSize: '13px', color: '#6b7280' }}>📍 Hub: Guangdong Shipping Depot</p>
                 </div>
                 <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontWeight: '800', fontSize: '18px' }}>{viewMode === 'NGN' ? '₦210,000' : '$131.00'}</span>
-                  <button onClick={() => setShowModal(true)} style={{ backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '6px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}>Request Invoice</button>
+                  {/* Listening directly to viewMode state */}
+                  <span style={{ fontWeight: '800', fontSize: '18px', color: '#111827' }}>
+                    {viewMode === 'NGN' ? '₦210,000' : '$131.00'}
+                  </span>
+                  <button 
+                    onClick={() => {
+                      setModalItem({ name: 'Industrial Borehole Submersible Pump (2HP)', ngn: '₦210,000', usd: '$131.00', dutyNgn: '₦14,700', dutyUsd: '$9.17', totalNgn: '₦224,700', totalUsd: '$140.17', origin: 'Guangdong Shipping Depot' });
+                      setShowModal(true);
+                    }} 
+                    style={{ backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '6px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}
+                  >
+                    Request Invoice
+                  </button>
                 </div>
               </div>
 
-              {/* CARD ITEM 2 */}
+              {/* CARD ITEM 2: LOCAL ROOFING */}
               <div style={{ backgroundColor: '#ffffff', borderRadius: '10px', border: '1px solid #e5e7eb', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
-                  <span style={{ fontSize: '11px', fontWeight: '700', color: '#4b5563', backgroundColor: '#f3f4f6', padding: '4px 8px', borderRadius: '4px' }}>LOCAL DISTRIBUTOR</span>
+                  <span style={{ fontSize: '11px', fontWeight: '700', color: '#16a34a', backgroundColor: '#f0fdf4', padding: '4px 8px', borderRadius: '4px' }}>LOCAL DISTRIBUTOR</span>
                   <h3 style={{ fontSize: '16px', fontWeight: '700', marginTop: '12px' }}>Premium Aluminum Roofing Sheets (0.55mm)</h3>
                   <p style={{ fontSize: '13px', color: '#6b7280' }}>📍 Hub: Abuja Central Warehouse</p>
                 </div>
                 <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontWeight: '800', fontSize: '18px' }}>{viewMode === 'NGN' ? '₦85,000' : '$53.00'}</span>
-                  <button onClick={() => setShowModal(true)} style={{ backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '6px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}>Request Invoice</button>
+                  {/* Listening directly to viewMode state */}
+                  <span style={{ fontWeight: '800', fontSize: '18px', color: '#111827' }}>
+                    {viewMode === 'NGN' ? '₦85,000' : '$53.00'}
+                  </span>
+                  <button 
+                    onClick={() => {
+                      setModalItem({ name: 'Premium Aluminum Roofing Sheets (0.55mm)', ngn: '₦85,000', usd: '$53.00', dutyNgn: '₦5,950', dutyUsd: '$3.71', totalNgn: '₦90,950', totalUsd: '$56.71', origin: 'Abuja Central Warehouse' });
+                      setShowModal(true);
+                    }} 
+                    style={{ backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '6px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}
+                  >
+                    Request Invoice
+                  </button>
                 </div>
               </div>
 
@@ -105,14 +139,20 @@ export default function Home() {
           <div style={{ backgroundColor: '#ffffff', padding: '25px', borderRadius: '12px', maxWidth: '400px', width: '100%', margin: '20px', position: 'relative' }}>
             <button onClick={() => setShowModal(false)} style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', color: '#9ca3af' }}>✕</button>
             <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '5px' }}>Proforma Pricing Sheet</h3>
-            <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '15px' }}>Verified trade clearance matrix and port tariffs values.</p>
+            <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '15px' }}>Verified trade clearance matrix and port tariffs values for {modalItem.name}.</p>
             
             <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '10px', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>FOB Port Base Liability:</span><strong>{viewMode === 'NGN' ? '₦210,000' : '$131.00'}</strong></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Customs Duty Premium (+7%):</span><strong>{viewMode === 'NGN' ? '₦14,700' : '$9.17'}</strong></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>FOB Port Base Liability:</span>
+                <strong>{viewMode === 'NGN' ? modalItem.ngn : modalItem.usd}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>Customs Duty Premium (+7%):</span>
+                <strong>{viewMode === 'NGN' ? modalItem.dutyNgn : modalItem.dutyUsd}</strong>
+              </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed #d1d5db', paddingTop: '8px', marginTop: '4px', fontSize: '14px', fontWeight: '800' }}>
                 <span>Total Project Settlement:</span>
-                <span style={{ color: '#16a34a' }}>{viewMode === 'NGN' ? '₦224,700' : '$140.17'}</span>
+                <span style={{ color: '#16a34a' }}>{viewMode === 'NGN' ? modalItem.totalNgn : modalItem.totalUsd}</span>
               </div>
             </div>
             
