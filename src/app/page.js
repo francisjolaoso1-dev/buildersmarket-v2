@@ -1,12 +1,6 @@
 'use client';
-export const dynamic = 'force-dynamic';
 import { useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
-
-// Initialize the secure Supabase client using our Vercel environment variables
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default function Home() {
   const [email, setEmail] = useState('');
@@ -20,9 +14,20 @@ export default function Home() {
     setLoading(true);
     setMessage('');
 
+    // Safely initialize Supabase only inside the function when clicked
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    
+    if (!supabaseUrl || !supabaseAnonKey) {
+      setMessage('Configuration Error: Missing database connection keys in Vercel settings.');
+      setLoading(false);
+      return;
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
     try {
       if (isSignUp) {
-        // Registering a brand new user
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -30,7 +35,6 @@ export default function Home() {
         if (error) throw error;
         setMessage('Registration successful! Check your email for a confirmation link.');
       } else {
-        // Signing in an existing user
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
@@ -90,7 +94,6 @@ export default function Home() {
             </button>
           </form>
 
-          {/* Feedback message display */}
           {message && (
             <div style={{ marginTop: '20px', padding: '12px', borderRadius: '6px', backgroundColor: message.includes('Error') ? '#fef2f2' : '#f0fdf4', color: message.includes('Error') ? '#991b1b' : '#166534', fontSize: '14px', textAlign: 'center', fontWeight: '500' }}>
               {message}
