@@ -2,22 +2,38 @@
 import { useState } from 'react';
 
 export default function Home() {
+  // Navigation & View States
+  const [activeTab, setActiveTab] = useState('market');
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState('NGN'); 
-  const [showModal, setShowModal] = useState(false);
-  const [modalItem, setModalItem] = useState(null);
-  const [activeTab, setActiveTab] = useState('market');
   const [selectedCategory, setSelectedCategory] = useState('All');
   
-  // Tracking & Checkout Engine States
+  // Modal & Tracking States
+  const [showModal, setShowModal] = useState(false);
+  const [modalItem, setModalItem] = useState(null);
   const [invoiceConfirmed, setInvoiceConfirmed] = useState(false);
   const [trackingStep, setTrackingStep] = useState(1); 
-  const [procurementMode, setProcurementMode] = useState('individual'); // 'individual' or 'corporate'
+  const [procurementMode, setProcurementMode] = useState('individual');
 
-  // Corporate Specific Fields
+  // Corporate Specific States
   const [corpDetails, setCorpDetails] = useState({ companyName: '', tinNumber: '', poNumber: '' });
 
-  // Interactive Product Catalog State
+  // AUTHENTICATION STATES
+  const [currentUser, setCurrentUser] = useState(null); // Holds logged-in user data
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authView, setAuthView] = useState('login'); // 'login' or 'register'
+  
+  // Auth Form State
+  const [authForm, setAuthForm] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    accountType: 'individual', // default tier
+    companyName: '',
+    tinNumber: ''
+  });
+
+  // Product Catalog State
   const [products, setProducts] = useState([
     { id: 1, name: 'Industrial Borehole Submersible Pump (2HP)', category: 'Plumbing', ngn: '₦210,000', usd: '$131.00', dutyNgn: '₦14,700', dutyUsd: '$9.17', totalNgn: '₦224,700', totalUsd: '$140.17', origin: 'Guangdong Shipping Depot', type: 'CHINA IMPORTED', color: '#e53e3e', bg: '#fff5f5', icon: '🚰' },
     { id: 2, name: 'Premium Aluminum Roofing Sheets (0.55mm)', category: 'Aluminum', ngn: '₦85,000', usd: '$53.00', dutyNgn: '₦5,950', dutyUsd: '$3.71', totalNgn: '₦90,950', totalUsd: '$56.71', origin: 'Abuja Central Warehouse', type: 'LOCAL DISTRIBUTOR', color: '#16a34a', bg: '#f0fdf4', icon: '🏠' },
@@ -28,6 +44,44 @@ export default function Home() {
   ]);
 
   const [formData, setFormData] = useState({ name: '', category: 'Prefab Structural', baseNgn: '', origin: '', type: 'CHINA IMPORTED' });
+
+  // Handle User Registration / Login Mock Processing
+  const handleAuthSubmit = (e) => {
+    e.preventDefault();
+    if (authView === 'register') {
+      const newUser = {
+        name: authForm.fullName || authForm.email.split('@')[0],
+        email: authForm.email,
+        accountType: authForm.accountType,
+        companyName: authForm.companyName,
+        tinNumber: authForm.tinNumber
+      };
+      setCurrentUser(newUser);
+      // Auto-set the checkout profile preferences based on registered tier
+      setProcurementMode(authForm.accountType);
+      if (authForm.accountType === 'corporate') {
+        setCorpDetails({ companyName: authForm.companyName, tinNumber: authForm.tinNumber, poNumber: '' });
+      }
+      alert(`Account created successfully! Welcome to buildersmarket, ${newUser.name}.`);
+    } else {
+      // Mock Login
+      const mockUser = {
+        name: authForm.email.split('@')[0],
+        email: authForm.email,
+        accountType: 'individual'
+      };
+      setCurrentUser(mockUser);
+      alert(`Welcome back, ${mockUser.name}!`);
+    }
+    setShowAuthModal(false);
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setCorpDetails({ companyName: '', tinNumber: '', poNumber: '' });
+    setProcurementMode('individual');
+    alert('Logged out securely.');
+  };
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) || product.origin.toLowerCase().includes(searchTerm.toLowerCase());
@@ -53,7 +107,6 @@ export default function Home() {
     if (formData.category === 'Architectural Design') defaultIcon = '📐';
     if (formData.category === 'Drilling') defaultIcon = '⚙️';
     if (formData.category === 'Plumbing') defaultIcon = '🚰';
-    if (formData.category === 'Aluminum') defaultIcon = '🪟';
 
     const newAsset = {
       id: products.length + 1, name: formData.name, category: formData.category,
@@ -70,7 +123,7 @@ export default function Home() {
   };
 
   const handlePrintMock = () => {
-    alert(`--- OFFICIAL PROFORMA INVOICE GENERATED ---\nCustomer Type: ${procurementMode.toUpperCase()}\n${procurementMode === 'corporate' ? `Company: ${corpDetails.companyName}\nTIN: ${corpDetails.tinNumber}\nPO Ref: ${corpDetails.poNumber || 'N/A'}\n` : ''}Item: ${modalItem.name}\nTotal Due: ${viewMode === 'NGN' ? modalItem.totalNgn : modalItem.totalUsd}\n\nInvoice file sent to printing queue!`);
+    alert(`--- OFFICIAL PROFORMA INVOICE GENERATED ---\nCustomer: ${currentUser ? currentUser.name : 'Guest'}\nCustomer Type: ${procurementMode.toUpperCase()}\n${procurementMode === 'corporate' ? `Company: ${corpDetails.companyName}\nTIN: ${corpDetails.tinNumber}\nPO Ref: ${corpDetails.poNumber || 'N/A'}\n` : ''}Item: ${modalItem.name}\nTotal Due: ${viewMode === 'NGN' ? modalItem.totalNgn : modalItem.totalUsd}\n\nProforma generated successfully!`);
   };
 
   const isDesign = modalItem?.category === 'Architectural Design';
@@ -95,10 +148,24 @@ export default function Home() {
           <button onClick={() => setActiveTab('market')} style={{ background: 'none', border: 'none', color: activeTab === 'market' ? '#16a34a' : '#4b5563', fontWeight: '600', cursor: 'pointer' }}>Marketplace</button>
           <button onClick={() => setActiveTab('supplier')} style={{ background: 'none', border: 'none', color: activeTab === 'supplier' ? '#16a34a' : '#4b5563', fontWeight: '600', cursor: 'pointer' }}>🇨🇳 Factory Portal</button>
           
-          <div style={{ border: '1px solid #d1d5db', borderRadius: '20px', padding: '3px', display: 'flex', backgroundColor: '#f3f4f6' }}>
+          <div style={{ border: '1px solid #d1d5db', borderRadius: '20px', padding: '3px', display: 'flex', backgroundColor: '#f3f4f6', marginRight: '5px' }}>
             <button onClick={() => setViewMode('NGN')} style={{ border: 'none', padding: '5px 12px', borderRadius: '16px', cursor: 'pointer', fontWeight: '700', fontSize: '12px', backgroundColor: viewMode === 'NGN' ? '#111827' : 'transparent', color: viewMode === 'NGN' ? '#ffffff' : '#4b5563' }}>₦ NGN</button>
             <button onClick={() => setViewMode('USD')} style={{ border: 'none', padding: '5px 12px', borderRadius: '16px', cursor: 'pointer', fontWeight: '700', fontSize: '12px', backgroundColor: viewMode === 'USD' ? '#111827' : 'transparent', color: viewMode === 'USD' ? '#ffffff' : '#4b5563' }}>$ USD</button>
           </div>
+
+          {/* DYNAMIC USER LOGGED IN STATE DISPLAY */}
+          {currentUser ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderLeft: '1px solid #e5e7eb', paddingLeft: '15px' }}>
+              <span style={{ fontSize: '13px', fontWeight: '600' }}>
+                👋 {currentUser.name} <span style={{ fontSize: '10px', backgroundColor: currentUser.accountType === 'corporate' ? '#dbffe4' : '#e5e7eb', color: currentUser.accountType === 'corporate' ? '#15803d' : '#111827', padding: '2px 6px', borderRadius: '10px', marginLeft: '4px', fontWeight: '800' }}>{currentUser.accountType.toUpperCase()}</span>
+              </span>
+              <button onClick={handleLogout} style={{ background: 'none', border: '1px solid #d1d5db', padding: '5px 10px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', fontWeight: '600' }}>Logout</button>
+            </div>
+          ) : (
+            <button onClick={() => { setAuthView('login'); setShowAuthModal(true); }} style={{ backgroundColor: '#111827', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>
+              Sign In
+            </button>
+          )}
         </div>
       </header>
 
@@ -120,7 +187,6 @@ export default function Home() {
                 <option value="Drilling">Borehole Drilling</option>
                 <option value="Plumbing">Industrial Plumbing</option>
                 <option value="Aluminum">Aluminum Products</option>
-                <option value="Structural Materials">Structural Materials</option>
               </select>
             </div>
           </section>
@@ -136,159 +202,4 @@ export default function Home() {
                   </div>
 
                   <div style={{ padding: '20px', flexGrow: 1 }}>
-                    <span style={{ fontSize: '10px', textTransform: 'uppercase', color: '#4b5563', fontWeight: '700', backgroundColor: '#e5e7eb', padding: '3px 6px', borderRadius: '4px' }}>{product.category}</span>
-                    <h3 style={{ fontSize: '15px', fontWeight: '700', marginTop: '10px', marginBottom: '6px', minHeight: '42px' }}>{product.name}</h3>
-                    <div style={{ fontSize: '13px', color: '#6b7280' }}>📍 Fulfillment: <strong>{product.origin}</strong></div>
-                  </div>
-
-                  <div style={{ padding: '0 20px 20px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f3f4f6', paddingTop: '15px' }}>
-                    <div>
-                      <span style={{ fontSize: '16px', fontWeight: '800', color: '#111827' }}>{viewMode === 'NGN' ? product.ngn : product.usd}</span>
-                      <span style={{ fontSize: '11px', color: '#6b7280', display: 'block' }}>FOB Base Price</span>
-                    </div>
-                    <button onClick={() => { setModalItem(product); setInvoiceConfirmed(false); setTrackingStep(1); setProcurementMode('individual'); setShowModal(true); }} style={{ backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '9px 14px', borderRadius: '6px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}>Request Invoice</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </main>
-        </>
-      ) : (
-        /* FACTORY PORTAL FORM */
-        <main style={{ maxWidth: '540px', margin: '40px auto', padding: '30px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
-          <h2 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '4px' }}>Global Asset Onboarding</h2>
-          <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '20px' }}>Deploy blueprints or equipment directly to the front-facing matrix.</p>
-          <form onSubmit={handleOnboardAsset} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <input type="text" placeholder="Asset/Product Title" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required style={{ width: '100%', padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '14px' }} />
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <select value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} style={{ padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db' }}>
-                <option value="Prefab Structural">Prefab & Capsule Units</option>
-                <option value="Architectural Design">Interior/Exterior Design</option>
-                <option value="Drilling">Borehole Drilling</option>
-                <option value="Plumbing">Industrial Plumbing</option>
-                <option value="Aluminum">Aluminum Products</option>
-              </select>
-              <select value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})} style={{ padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db' }}>
-                <option value="CHINA IMPORTED">CHINA IMPORTED</option>
-                <option value="LOCAL DISTRIBUTOR">LOCAL DISTRIBUTOR</option>
-                <option value="DESIGN PACKAGE">DESIGN PACKAGE</option>
-              </select>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <input type="number" placeholder="Base Cost Price (NGN ₦)" value={formData.baseNgn} onChange={(e) => setFormData({...formData, baseNgn: e.target.value})} required style={{ padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db' }} />
-              <input type="text" placeholder="Logistics Hub Location" value={formData.origin} onChange={(e) => setFormData({...formData, origin: e.target.value})} required style={{ padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db' }} />
-            </div>
-            <button type="submit" style={{ backgroundColor: '#111827', color: '#fff', padding: '13px', borderRadius: '6px', border: 'none', fontWeight: '700', cursor: 'pointer' }}>Publish Node to Grid</button>
-          </form>
-        </main>
-      )}
-
-      {/* DUAL MODE OVERLAY MODAL */}
-      {showModal && modalItem && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(11,24,39,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ backgroundColor: '#ffffff', padding: '25px', borderRadius: '12px', maxWidth: '460px', width: '100%', margin: '20px', position: 'relative', maxExtents: '90vh', overflowY: 'auto' }}>
-            <button onClick={() => setShowModal(false)} style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', color: '#9ca3af' }}>✕</button>
-            
-            {!invoiceConfirmed ? (
-              <>
-                <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '4px' }}>Proforma Pricing Sheet</h3>
-                <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '15px' }}>Select profile context below to streamline settlement documentation.</p>
-                
-                {/* DUAL INTERACTIVE TOGGLE SWAPPER */}
-                <div style={{ display: 'flex', backgroundColor: '#f3f4f6', borderRadius: '8px', padding: '4px', marginBottom: '15px' }}>
-                  <button type="button" onClick={() => setProcurementMode('individual')} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', backgroundColor: procurementMode === 'individual' ? '#ffffff' : 'transparent', color: procurementMode === 'individual' ? '#111827' : '#6b7280', boxShadow: procurementMode === 'individual' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none' }}>👤 Individual Client</button>
-                  <button type="button" onClick={() => setProcurementMode('corporate')} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', backgroundColor: procurementMode === 'corporate' ? '#ffffff' : 'transparent', color: procurementMode === 'corporate' ? '#111827' : '#6b7280', boxShadow: procurementMode === 'corporate' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none' }}>🏢 Corporate / Firm</button>
-                </div>
-
-                {/* DYNAMIC FORM INJECTION FOR COMPANIES */}
-                {procurementMode === 'corporate' && (
-                  <div style={{ padding: '12px', borderRadius: '8px', border: '1px dashed #16a34a', backgroundColor: '#f0fdf4', marginBottom: '15px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <span style={{ fontSize: '11px', fontWeight: '800', color: '#16a34a', textTransform: 'uppercase' }}>Corporate Validation Fields</span>
-                    <input type="text" placeholder="Registered Company Name" value={corpDetails.companyName} onChange={(e) => setCorpDetails({...corpDetails, companyName: e.target.value})} style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }} />
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                      <input type="text" placeholder="Tax TIN Number" value={corpDetails.tinNumber} onChange={(e) => setCorpDetails({...corpDetails, tinNumber: e.target.value})} style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }} />
-                      <input type="text" placeholder="Internal PO Reference (Optional)" value={corpDetails.poNumber} onChange={(e) => setCorpDetails({...corpDetails, poNumber: e.target.value})} style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }} />
-                    </div>
-                  </div>
-                )}
-
-                <div style={{ backgroundColor: '#f3f4f6', padding: '12px', borderRadius: '6px', marginBottom: '15px', fontSize: '13px' }}>
-                  <strong>Asset Line:</strong> {modalItem.name} {modalItem.icon}
-                  <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '3px' }}>Dispatch Hub: {modalItem.origin}</div>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', borderTop: '1px solid #e5e7eb', paddingTop: '10px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>FOB Port Base Liability:</span><strong>{viewMode === 'NGN' ? modalItem.ngn : modalItem.usd}</strong></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Customs Duty Premium:</span><strong>{isDesign ? 'EXEMPT (Digital Asset)' : (viewMode === 'NGN' ? modalItem.dutyNgn : modalItem.dutyUsd)}</strong></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed #d1d5db', paddingTop: '8px', marginTop: '4px', fontSize: '14px', fontWeight: '800' }}>
-                    <span>Total Settlement Due:</span>
-                    <span style={{ color: '#16a34a' }}>{viewMode === 'NGN' ? modalItem.totalNgn : modalItem.totalUsd}</span>
-                  </div>
-                </div>
-                
-                <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                  {procurementMode === 'corporate' && (
-                    <button onClick={handlePrintMock} style={{ backgroundColor: '#111827', color: '#fff', border: 'none', padding: '12px', borderRadius: '6px', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>🖨️ Print Proforma</button>
-                  )}
-                  <button onClick={() => setInvoiceConfirmed(true)} style={{ flex: 1, backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '12px', borderRadius: '6px', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>
-                    Confirm & Track Order
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '4px' }}>Procurement Tracking Node</h3>
-                <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '20px' }}>
-                  Account Assignment: <strong style={{ color: '#111827' }}>{procurementMode === 'corporate' ? corpDetails.companyName || 'Corporate Account' : 'Individual Builder'}</strong>
-                </p>
-
-                {/* PROGRESS SEGMENTS */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '4px', marginBottom: '25px' }}>
-                  <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 1 ? '#16a34a' : '#e5e7eb' }} />
-                  <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 2 ? '#16a34a' : '#e5e7eb' }} />
-                  <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 3 ? '#16a34a' : '#e5e7eb' }} />
-                  <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 4 ? '#16a34a' : '#e5e7eb' }} />
-                </div>
-
-                {/* TRACKER LABELS */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: '700', marginBottom: '20px', color: '#6b7280' }}>
-                  <span style={{ color: trackingStep === 1 ? '#16a34a' : '#6b7280' }}>{label1}</span>
-                  <span style={{ color: trackingStep === 2 ? '#16a34a' : '#6b7280' }}>{label2}</span>
-                  <span style={{ color: trackingStep === 3 ? '#16a34a' : '#6b7280' }}>{label3}</span>
-                  <span style={{ color: trackingStep === 4 ? '#16a34a' : '#6b7280' }}>{label4}</span>
-                </div>
-
-                {/* LOG DATA PANEL */}
-                <div style={{ backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', padding: '15px', borderRadius: '8px', marginBottom: '25px', fontSize: '13px' }}>
-                  {!isDesign ? (
-                    <div>
-                      {trackingStep === 1 && <div>🏭 <strong>Stage 1: Factory Production</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Your materials are currently being crated and serialized for container logistics.</p></div>}
-                      {trackingStep === 2 && <div>🚢 <strong>Stage 2: Ocean Freight Transit</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Cargo moving securely across main shipping corridors toward the entry port.</p></div>}
-                      {trackingStep === 3 && <div>🛃 <strong>Stage 3: Customs Duty Clearing</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Port tariff calculations and official manifest matching are undergoing approval.</p></div>}
-                      {trackingStep === 4 && <div>✅ <strong>Stage 4: Ready for Delivery</strong><p style={{ margin: '4px 0 0', color: '#16a34a', fontSize: '12px', fontWeight: '600' }}>Clearance complete! Items are ready for site dispatch or terminal pickup.</p></div>}
-                    </div>
-                  ) : (
-                    <div>
-                      {trackingStep === 1 && <div>✏️ <strong>Stage 1: Spatial Drafting</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Translating space shell boundaries into raw structural framing layout lines.</p></div>}
-                      {trackingStep === 2 && <div>🖼️ <strong>Stage 2: High-Fidelity Rendering</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Material shaders and lighting profiles are being cooked into realistic 3D imagery.</p></div>}
-                      {trackingStep === 3 && <div>🔄 <strong>Stage 3: Quality Compliance</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Reviewing configurations against structural constraints to guarantee building fit.</p></div>}
-                      {trackingStep === 4 && <div>📩 <strong>Stage 4: Packages Dispatched</strong><p style={{ margin: '4px 0 0', color: '#16a34a', fontSize: '12px', fontWeight: '600' }}>High-resolution schematic plans and vector documents pushed straight to your profile portal email.</p></div>}
-                    </div>
-                  )}
-                </div>
-
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-                  <button disabled={trackingStep === 1} onClick={() => setTrackingStep(prev => prev - 1)} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #d1d5db', cursor: 'pointer', fontSize: '12px', fontWeight: '600', backgroundColor: '#fff' }}>⏮️ Prev Stage</button>
-                  <button disabled={trackingStep === 4} onClick={() => setTrackingStep(prev => prev + 1)} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: '600', backgroundColor: '#111827', color: '#fff' }}>Next Stage ⏭️</button>
-                </div>
-
-                <button onClick={() => setShowModal(false)} style={{ width: '100%', backgroundColor: '#6b7280', color: 'white', padding: '10px', borderRadius: '6px', fontWeight: '600', border: 'none', cursor: 'pointer', fontSize: '13px' }}>Close Console</button>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
-    </div>
-  );
-}
+                    <span style={{ fontSize: '10px', textTransform: 'uppercase', color: '#4b5563', fontWeight: '700', backgroundColor: '#e5e
