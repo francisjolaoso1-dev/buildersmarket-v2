@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -9,11 +9,12 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('market');
   const [selectedCategory, setSelectedCategory] = useState('All');
   
-  // Tracking Engine
+  // Tracking Engine States
   const [invoiceConfirmed, setInvoiceConfirmed] = useState(false);
   const [trackingStep, setTrackingStep] = useState(1); 
 
-  const PRODUCTS = [
+  // Interactive Product Catalog State
+  const [products, setProducts] = useState([
     { id: 1, name: 'Industrial Borehole Submersible Pump (2HP)', category: 'Plumbing', ngn: '₦210,000', usd: '$131.00', dutyNgn: '₦14,700', dutyUsd: '$9.17', totalNgn: '₦224,700', totalUsd: '$140.17', origin: 'Guangdong Shipping Depot', type: 'CHINA IMPORTED', color: '#e53e3e', bg: '#fff5f5', icon: '🚰' },
     { id: 2, name: 'Premium Aluminum Roofing Sheets (0.55mm)', category: 'Aluminum', ngn: '₦85,000', usd: '$53.00', dutyNgn: '₦5,950', dutyUsd: '$3.71', totalNgn: '₦90,950', totalUsd: '$56.71', origin: 'Abuja Central Warehouse', type: 'LOCAL DISTRIBUTOR', color: '#16a34a', bg: '#f0fdf4', icon: '🏠' },
     { id: 3, name: 'Luxury Smart Space Capsule House (V8-Series)', category: 'Prefab Structural', ngn: '₦44,800,000', usd: '$28,000.00', dutyNgn: '₦3,136,000', dutyUsd: '$1,960.00', totalNgn: '₦47,936,000', totalUsd: '$29,960.00', origin: 'Foshan Prefab Industry Zone', type: 'CHINA IMPORTED', color: '#2563eb', bg: '#eff6ff', icon: '🚀' },
@@ -21,20 +22,89 @@ export default function Home() {
     { id: 5, name: 'Heavy Industrial Borehole Drilling Rig Bit (9 7/8")', category: 'Drilling', ngn: '₦720,000', usd: '$450.00', dutyNgn: '₦50,400', dutyUsd: '$31.50', totalNgn: '₦770,400', totalUsd: '$481.50', origin: 'Tianjin Manufacturing Zone', type: 'CHINA IMPORTED', color: '#e53e3e', bg: '#fff5f5', icon: '⚙️' },
     { id: 6, name: 'High-Grade Structural Steel H-Beams (Bulk)', category: 'Structural Materials', ngn: '₦340,000', usd: '$212.00', dutyNgn: '₦23,800', dutyUsd: '$14.84', totalNgn: '₦363,800', totalUsd: '$226.84', origin: 'Lagos Port Depot', type: 'LOCAL DISTRIBUTOR', color: '#16a34a', bg: '#f0fdf4', icon: '🏗️' },
     { id: 7, name: 'Eco Modular A-Frame Cabin House (Double Loft)', category: 'Prefab Structural', ngn: '₦20,800,000', usd: '$13,000.00', dutyNgn: '₦1,456,000', dutyUsd: '$910.00', totalNgn: '₦22,256,000', totalUsd: '$13,910.00', origin: 'Zhejiang Manufacturing Hub', type: 'CHINA IMPORTED', color: '#2563eb', bg: '#eff6ff', icon: '🪵' },
-    { id: 8, name: 'Modern Cabin Exterior Landscape & Elevation Masterplan', category: 'Architectural Design', ngn: '₦3,200,000', usd: '$2,000.00', dutyNgn: '₦0', dutyUsd: '$0', totalNgn: '₦3,200,000', totalUsd: '$2,000.00', origin: 'Digital Delivery Hub', type: 'DESIGN PACKAGE', color: '#7c3aed', bg: '#f5f3ff', icon: '🏞️' },
-    { id: 9, name: 'Casement Aluminum Window Profiles (Standard)', category: 'Aluminum', ngn: '₦45,000', usd: '$28.12', dutyNgn: '₦3,150', dutyUsd: '$1.97', totalNgn: '₦48,150', totalUsd: '$30.09', origin: 'Guangdong Factory Direct', type: 'CHINA IMPORTED', color: '#e53e3e', bg: '#fff5f5', icon: '🪟' },
-    { id: 10, name: 'Deep-Well Hydraulic Drilling Control Panel', category: 'Drilling', ngn: '₦1,440,000', usd: '$900.00', dutyNgn: '₦100,800', dutyUsd: '$63.00', totalNgn: '₦1,540,800', totalUsd: '$963.00', origin: 'Shandong Port Zone', type: 'CHINA IMPORTED', color: '#e53e3e', bg: '#fff5f5', icon: '🎛️' },
-    { id: 11, name: 'High-Pressure PPR Plumbing Pipes (Pack of 50)', category: 'Plumbing', ngn: '₦120,000', usd: '$75.00', dutyNgn: '₦8,400', dutyUsd: '$5.25', totalNgn: '₦128,400', totalUsd: '$80.25', origin: 'Abuja Central Warehouse', type: 'LOCAL DISTRIBUTOR', color: '#16a34a', bg: '#f0fdf4', icon: '🧪' },
-    { id: 12, name: 'Portland Cement Grade 42.5R (Bulk Ton)', category: 'Structural Materials', ngn: '₦96,000', usd: '$60.00', dutyNgn: '₦6,720', dutyUsd: '$4.20', totalNgn: '₦102,720', totalUsd: '$64.20', origin: 'Lagos Port Depot', type: 'LOCAL DISTRIBUTOR', color: '#16a34a', bg: '#f0fdf4', icon: '🧱' }
-  ];
+    { id: 8, name: 'Modern Cabin Exterior Landscape & Elevation Masterplan', category: 'Architectural Design', ngn: '₦3,200,000', usd: '$2,000.00', dutyNgn: '₦0', dutyUsd: '$0', totalNgn: '₦3,200,000', totalUsd: '$2,000.00', origin: 'Digital Delivery Hub', type: 'DESIGN PACKAGE', color: '#7c3aed', bg: '#f5f3ff', icon: '🏞️' }
+  ]);
 
-  const filteredProducts = PRODUCTS.filter(product => {
+  // Form States for Supplier Factory Submission
+  const [formData, setFormData] = useState({
+    name: '',
+    category: 'Prefab Structural',
+    baseNgn: '',
+    origin: '',
+    type: 'CHINA IMPORTED'
+  });
+
+  // Dynamic Filtering Calculation
+  const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) || product.origin.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
-  // Safely fallback variables to prevent server hydration mismatches
+  // Handle Supplier Form Submission
+  const handleOnboardAsset = (e) => {
+    e.preventDefault();
+    
+    // Parse values and calculate duty premiums dynamically
+    const baseNgnNum = parseFloat(formData.baseNgn) || 0;
+    const isDigital = formData.category === 'Architectural Design';
+    
+    const calculatedDutyNgn = isDigital ? 0 : Math.round(baseNgnNum * 0.07);
+    const totalNgnNum = baseNgnNum + calculatedDutyNgn;
+    
+    // Approximate USD values for mock analytics ($1 = ~₦1,600 ratio baseline)
+    const baseUsdNum = Math.round((baseNgnNum / 1600) * 100) / 100;
+    const calculatedDutyUsd = isDigital ? 0 : Math.round((calculatedDutyNgn / 1600) * 100) / 100;
+    const totalUsdNum = baseUsdNum + calculatedDutyUsd;
+
+    // Pick visual themes automatically based on type
+    let themeColor = '#2563eb';
+    let themeBg = '#eff6ff';
+    let defaultIcon = '📦';
+
+    if (formData.type === 'LOCAL DISTRIBUTOR') {
+      themeColor = '#16a34a';
+      themeBg = '#f0fdf4';
+    } else if (formData.type === 'DESIGN PACKAGE') {
+      themeColor = '#7c3aed';
+      themeBg = '#f5f3ff';
+    }
+
+    // Assign appropriate emoji icon based on selected sector
+    if (formData.category === 'Prefab Structural') defaultIcon = '🏠';
+    if (formData.category === 'Architectural Design') defaultIcon = '📐';
+    if (formData.category === 'Drilling') defaultIcon = '⚙️';
+    if (formData.category === 'Plumbing') defaultIcon = '🚰';
+    if (formData.category === 'Aluminum') defaultIcon = '🪟';
+    if (formData.category === 'Structural Materials') defaultIcon = '🧱';
+
+    const newAsset = {
+      id: products.length + 1,
+      name: formData.name,
+      category: formData.category,
+      ngn: `₦${baseNgnNum.toLocaleString()}`,
+      usd: `$${baseUsdNum.toLocaleString()}`,
+      dutyNgn: `₦${calculatedDutyNgn.toLocaleString()}`,
+      dutyUsd: `$${calculatedDutyUsd.toLocaleString()}`,
+      totalNgn: `₦${totalNgnNum.toLocaleString()}`,
+      totalUsd: `$${totalUsdNum.toLocaleString()}`,
+      origin: formData.origin,
+      type: formData.type,
+      color: themeColor,
+      bg: themeBg,
+      icon: defaultIcon
+    };
+
+    // Update state to add item to marketplace instantly
+    setProducts([newAsset, ...products]);
+    
+    // Reset fields and jump user to view their asset live
+    setFormData({ name: '', category: 'Prefab Structural', baseNgn: '', origin: '', type: 'CHINA IMPORTED' });
+    setActiveTab('market');
+    alert('Asset successfully cataloged into the Global Procurement Matrix!');
+  };
+
+  // Safe structural fallback variables for tracking logic
   const isDesign = modalItem?.category === 'Architectural Design';
   const label1 = isDesign ? '1. Draft' : '1. Factory';
   const label2 = isDesign ? '2. Render' : '2. Transit';
@@ -87,7 +157,7 @@ export default function Home() {
             </div>
           </section>
 
-          {/* GRID PORTAL */}
+          {/* GRID DISPLAY */}
           <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '25px' }}>
               {filteredProducts.map((product) => (
@@ -116,12 +186,55 @@ export default function Home() {
           </main>
         </>
       ) : (
-        /* PORTAL PLACEHOLDER */
-        <main style={{ maxWidth: '500px', margin: '40px auto', padding: '25px', backgroundColor: '#ffffff', borderRadius: '10px', border: '1px solid #e5e7eb' }}>
-          <h2 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '6px' }}>Global Plant Onboarding</h2>
-          <form onSubmit={(e) => { e.preventDefault(); alert('Indexed.'); }} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <input type="text" placeholder="Corporate Manufacturing Identity" required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #d1d5db' }} />
-            <button type="submit" style={{ backgroundColor: '#111827', color: '#fff', padding: '12px', borderRadius: '6px', border: 'none', fontWeight: '700' }}>Submit Infrastructure Dossier</button>
+        /* FUNCTIONAL SUPPLIER FACTORY PORTAL FORM */
+        <main style={{ maxWidth: '540px', margin: '40px auto', padding: '30px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+          <div style={{ marginBottom: '20px' }}>
+            <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#111827', marginBottom: '4px' }}>Global Asset Onboarding</h2>
+            <p style={{ fontSize: '13px', color: '#6b7280' }}>Deploy equipment production lines or layout blueprints instantly to the front-facing grid.</p>
+          </div>
+
+          <form onSubmit={handleOnboardAsset} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', marginBottom: '6px', color: '#374151' }}>Asset/Product Title</label>
+              <input type="text" placeholder="e.g., Luxury Custom Aluminum Folding Door" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required style={{ width: '100%', padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '14px', boxSizing: 'border-box' }} />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', marginBottom: '6px', color: '#374151' }}>Sector Category</label>
+                <select value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} style={{ width: '100%', padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '14px', backgroundColor: '#fff', boxSizing: 'border-box' }}>
+                  <option value="Prefab Structural">Prefab & Capsule Units</option>
+                  <option value="Architectural Design">Interior/Exterior Design</option>
+                  <option value="Drilling">Borehole Drilling</option>
+                  <option value="Plumbing">Industrial Plumbing</option>
+                  <option value="Aluminum">Aluminum Products</option>
+                  <option value="Structural Materials">Structural Materials</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', marginBottom: '6px', color: '#374151' }}>Procurement Type</label>
+                <select value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})} style={{ width: '100%', padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '14px', backgroundColor: '#fff', boxSizing: 'border-box' }}>
+                  <option value="CHINA IMPORTED">CHINA IMPORTED</option>
+                  <option value="LOCAL DISTRIBUTOR">LOCAL DISTRIBUTOR</option>
+                  <option value="DESIGN PACKAGE">DESIGN PACKAGE</option>
+                </select>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', marginBottom: '6px', color: '#374151' }}>Base Cost Price (NGN ₦)</label>
+                <input type="number" placeholder="Value in Naira" value={formData.baseNgn} onChange={(e) => setFormData({...formData, baseNgn: e.target.value})} required style={{ width: '100%', padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '14px', boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', marginBottom: '6px', color: '#374151' }}>Logistics Hub Location</label>
+                <input type="text" placeholder="e.g., Foshan Plant, China" value={formData.origin} onChange={(e) => setFormData({...formData, origin: e.target.value})} required style={{ width: '100%', padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '14px', boxSizing: 'border-box' }} />
+              </div>
+            </div>
+
+            <button type="submit" style={{ width: '100%', backgroundColor: '#111827', color: '#fff', padding: '13px', borderRadius: '6px', border: 'none', fontWeight: '700', fontSize: '14px', cursor: 'pointer', marginTop: '10px' }}>
+              Publish Node to Global Grid
+            </button>
           </form>
         </main>
       )}
@@ -165,7 +278,7 @@ export default function Home() {
                 <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '4px' }}>Procurement Tracking Node</h3>
                 <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '25px' }}>Real-time freight cargo telemetry ledger for your order.</p>
 
-                {/* VISUAL LAYOUT TRACKER */}
+                {/* VISUAL TRACKING FILL BAR */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '4px', marginBottom: '25px' }}>
                   <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 1 ? '#16a34a' : '#e5e7eb' }} />
                   <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 2 ? '#16a34a' : '#e5e7eb' }} />
@@ -173,7 +286,7 @@ export default function Home() {
                   <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 4 ? '#16a34a' : '#e5e7eb' }} />
                 </div>
 
-                {/* TRACKING STEP LABELS */}
+                {/* STEP LABELS */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: '700', marginBottom: '20px', color: '#6b7280' }}>
                   <span style={{ color: trackingStep === 1 ? '#16a34a' : '#6b7280' }}>{label1}</span>
                   <span style={{ color: trackingStep === 2 ? '#16a34a' : '#6b7280' }}>{label2}</span>
@@ -181,7 +294,7 @@ export default function Home() {
                   <span style={{ color: trackingStep === 4 ? '#16a34a' : '#6b7280' }}>{label4}</span>
                 </div>
 
-                {/* TEXT STATUS LOGGER BOX */}
+                {/* STATUS DETAILS TEXT LOGGER */}
                 <div style={{ backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', padding: '15px', borderRadius: '8px', marginBottom: '25px', fontSize: '13px' }}>
                   {!isDesign ? (
                     <div>
