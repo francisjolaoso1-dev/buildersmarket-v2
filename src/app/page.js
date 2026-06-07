@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 
-// Baseline inventory database tracking raw factory costs in USD
 const INITIAL_PRODUCTS = [
   { id: 1, name: 'Premium Aluminum Roofing Sheets (0.55mm)', category: 'Roofing', priceUSD: 53, location: 'Abuja Warehouse', origin: 'Local', image: '🏠' },
   { id: 2, name: 'Industrial Borehole Submersible Pump (2HP)', category: 'Plumbing', priceUSD: 131, location: 'Lagos Port Depot', origin: 'China Imported', image: '🚰' },
@@ -11,16 +10,24 @@ const INITIAL_PRODUCTS = [
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [currency, setCurrency] = useState('NGN'); // Toggle state: NGN or USD
-  const [exchangeRate, setExchangeRate] = useState(1600); // Dynamic slider state
+  const [currency, setCurrency] = useState('NGN'); 
+  const [exchangeRate, setExchangeRate] = useState(1600); 
 
-  // Mathematical price conversion engine
-  const formatPrice = (priceInUSD) => {
+  // Pre-calculate prices safely outside of the return statement
+  const getDisplayPrice = (priceUSD) => {
     if (currency === 'NGN') {
-      const priceInNGN = Math.round(priceInUSD * exchangeRate);
-      return `₦${priceInNGN.toLocaleString()}`;
+      const converted = Math.round(priceUSD * exchangeRate);
+      return '₦' + converted.toLocaleString();
     }
-    return `$${priceInUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return '$' + priceUSD.toFixed(2);
+  };
+
+  const getSubTextPrice = (priceUSD) => {
+    if (currency === 'NGN') {
+      return 'Base: $' + priceUSD;
+    }
+    const convertedSub = Math.round(priceUSD * exchangeRate);
+    return 'Approx: ₦' + convertedSub.toLocaleString();
   };
 
   const filteredProducts = INITIAL_PRODUCTS.filter(product => {
@@ -32,7 +39,7 @@ export default function Home() {
   return (
     <div style={{ fontFamily: 'system-ui, sans-serif', backgroundColor: '#f9fafb', minHeight: '100vh', color: '#111827' }}>
       
-      {/* HEADER WITH NGN/USD TOGGLE */}
+      {/* HEADER NAVBAR */}
       <header style={{ backgroundColor: '#ffffff', borderBottom: '1px solid #e5e7eb', padding: '15px 30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{ fontSize: '28px' }}>🏗️</span>
@@ -58,10 +65,10 @@ export default function Home() {
         </div>
       </header>
 
-      {/* DYNAMIC EXCHANGE RATE SLIDER BAR */}
+      {/* FX SLIDER WORKSPACE */}
       <div style={{ backgroundColor: '#f0fdf4', borderBottom: '1px solid #bbf7d0', padding: '10px 30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
         <div style={{ fontSize: '14px', color: '#166534', fontWeight: '500' }}>
-          📈 <strong>Dynamic FX Engine:</strong> Move the slider to simulate changing import costs based on macroeconomic shifts.
+          📈 <strong>Dynamic FX Engine:</strong> Adjust the exchange slider index to convert currency layout components natively.
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: '#ffffff', padding: '6px 14px', borderRadius: '20px', border: '1px solid #bbf7d0' }}>
           <span style={{ fontSize: '14px', fontWeight: '700', color: '#111827' }}>1 USD = ₦{exchangeRate}</span>
@@ -76,7 +83,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* HERO SECTION */}
+      {/* HERO HERO CONTAINER */}
       <section style={{ backgroundColor: '#111827', color: '#ffffff', padding: '50px 30px', textAlign: 'center' }}>
         <h1 style={{ fontSize: '36px', fontWeight: '800', marginBottom: '12px' }}>Cross-Border Procurement Portal</h1>
         <p style={{ fontSize: '16px', color: '#9ca3af', maxWidth: '600px', margin: '0 auto 25px' }}>
@@ -94,7 +101,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* DIRECTORY GRID */}
+      {/* PRODUCTS DISPLAY DIRECTORY */}
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
         <h2 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '20px', borderBottom: '2px solid #e5e7eb', paddingBottom: '10px' }}>
           Available Global Inventory ({filteredProducts.length})
@@ -119,4 +126,21 @@ export default function Home() {
 
               <div style={{ padding: '0 20px 20px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f3f4f6', paddingTop: '15px' }}>
                 <div>
-                  <span style={{ fontSize: '18px', fontWeight
+                  <span style={{ fontSize: '18px', fontWeight: '800', color: '#111827' }}>{getDisplayPrice(product.priceUSD)}</span>
+                  <span style={{ fontSize: '11px', color: '#6b7280', display: 'block', marginTop: '2px' }}>
+                    {getSubTextPrice(product.priceUSD)}
+                  </span>
+                </div>
+                <button style={{ backgroundColor: '#16a34a', color: 'white', border: 'none', padding: '8px 12px', borderRadius: '6px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}>
+                  Select Item
+                </button>
+              </div>
+
+            </div>
+          ))}
+        </div>
+      </main>
+
+    </div>
+  );
+}
