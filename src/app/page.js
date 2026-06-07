@@ -9,9 +9,13 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('market');
   const [selectedCategory, setSelectedCategory] = useState('All');
   
-  // Tracking Engine States
+  // Tracking & Checkout Engine States
   const [invoiceConfirmed, setInvoiceConfirmed] = useState(false);
   const [trackingStep, setTrackingStep] = useState(1); 
+  const [procurementMode, setProcurementMode] = useState('individual'); // 'individual' or 'corporate'
+
+  // Corporate Specific Fields
+  const [corpDetails, setCorpDetails] = useState({ companyName: '', tinNumber: '', poNumber: '' });
 
   // Interactive Product Catalog State
   const [products, setProducts] = useState([
@@ -20,91 +24,55 @@ export default function Home() {
     { id: 3, name: 'Luxury Smart Space Capsule House (V8-Series)', category: 'Prefab Structural', ngn: '₦44,800,000', usd: '$28,000.00', dutyNgn: '₦3,136,000', dutyUsd: '$1,960.00', totalNgn: '₦47,936,000', totalUsd: '$29,960.00', origin: 'Foshan Prefab Industry Zone', type: 'CHINA IMPORTED', color: '#2563eb', bg: '#eff6ff', icon: '🚀' },
     { id: 4, name: 'Premium Capsule Interior Fit-Out & Concept Design', category: 'Architectural Design', ngn: '₦2,400,000', usd: '$1,500.00', dutyNgn: '₦0', dutyUsd: '$0', totalNgn: '₦2,400,000', totalUsd: '$1,500.00', origin: 'Digital Delivery Hub', type: 'DESIGN PACKAGE', color: '#7c3aed', bg: '#f5f3ff', icon: '🛋️' },
     { id: 5, name: 'Heavy Industrial Borehole Drilling Rig Bit (9 7/8")', category: 'Drilling', ngn: '₦720,000', usd: '$450.00', dutyNgn: '₦50,400', dutyUsd: '$31.50', totalNgn: '₦770,400', totalUsd: '$481.50', origin: 'Tianjin Manufacturing Zone', type: 'CHINA IMPORTED', color: '#e53e3e', bg: '#fff5f5', icon: '⚙️' },
-    { id: 6, name: 'High-Grade Structural Steel H-Beams (Bulk)', category: 'Structural Materials', ngn: '₦340,000', usd: '$212.00', dutyNgn: '₦23,800', dutyUsd: '$14.84', totalNgn: '₦363,800', totalUsd: '$226.84', origin: 'Lagos Port Depot', type: 'LOCAL DISTRIBUTOR', color: '#16a34a', bg: '#f0fdf4', icon: '🏗️' },
-    { id: 7, name: 'Eco Modular A-Frame Cabin House (Double Loft)', category: 'Prefab Structural', ngn: '₦20,800,000', usd: '$13,000.00', dutyNgn: '₦1,456,000', dutyUsd: '$910.00', totalNgn: '₦22,256,000', totalUsd: '$13,910.00', origin: 'Zhejiang Manufacturing Hub', type: 'CHINA IMPORTED', color: '#2563eb', bg: '#eff6ff', icon: '🪵' },
-    { id: 8, name: 'Modern Cabin Exterior Landscape & Elevation Masterplan', category: 'Architectural Design', ngn: '₦3,200,000', usd: '$2,000.00', dutyNgn: '₦0', dutyUsd: '$0', totalNgn: '₦3,200,000', totalUsd: '$2,000.00', origin: 'Digital Delivery Hub', type: 'DESIGN PACKAGE', color: '#7c3aed', bg: '#f5f3ff', icon: '🏞️' }
+    { id: 6, name: 'High-Grade Structural Steel H-Beams (Bulk)', category: 'Structural Materials', ngn: '₦340,000', usd: '$212.00', dutyNgn: '₦23,800', dutyUsd: '$14.84', totalNgn: '₦363,800', totalUsd: '$226.84', origin: 'Lagos Port Depot', type: 'LOCAL DISTRIBUTOR', color: '#16a34a', bg: '#f0fdf4', icon: '🏗️' }
   ]);
 
-  // Form States for Supplier Factory Submission
-  const [formData, setFormData] = useState({
-    name: '',
-    category: 'Prefab Structural',
-    baseNgn: '',
-    origin: '',
-    type: 'CHINA IMPORTED'
-  });
+  const [formData, setFormData] = useState({ name: '', category: 'Prefab Structural', baseNgn: '', origin: '', type: 'CHINA IMPORTED' });
 
-  // Dynamic Filtering Calculation
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) || product.origin.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
-  // Handle Supplier Form Submission
   const handleOnboardAsset = (e) => {
     e.preventDefault();
-    
-    // Parse values and calculate duty premiums dynamically
     const baseNgnNum = parseFloat(formData.baseNgn) || 0;
     const isDigital = formData.category === 'Architectural Design';
-    
     const calculatedDutyNgn = isDigital ? 0 : Math.round(baseNgnNum * 0.07);
     const totalNgnNum = baseNgnNum + calculatedDutyNgn;
-    
-    // Approximate USD values for mock analytics ($1 = ~₦1,600 ratio baseline)
     const baseUsdNum = Math.round((baseNgnNum / 1600) * 100) / 100;
     const calculatedDutyUsd = isDigital ? 0 : Math.round((calculatedDutyNgn / 1600) * 100) / 100;
     const totalUsdNum = baseUsdNum + calculatedDutyUsd;
 
-    // Pick visual themes automatically based on type
-    let themeColor = '#2563eb';
-    let themeBg = '#eff6ff';
-    let defaultIcon = '📦';
+    let themeColor = '#2563eb'; let themeBg = '#eff6ff'; let defaultIcon = '📦';
+    if (formData.type === 'LOCAL DISTRIBUTOR') { themeColor = '#16a34a'; themeBg = '#f0fdf4'; }
+    else if (formData.type === 'DESIGN PACKAGE') { themeColor = '#7c3aed'; themeBg = '#f5f3ff'; }
 
-    if (formData.type === 'LOCAL DISTRIBUTOR') {
-      themeColor = '#16a34a';
-      themeBg = '#f0fdf4';
-    } else if (formData.type === 'DESIGN PACKAGE') {
-      themeColor = '#7c3aed';
-      themeBg = '#f5f3ff';
-    }
-
-    // Assign appropriate emoji icon based on selected sector
     if (formData.category === 'Prefab Structural') defaultIcon = '🏠';
     if (formData.category === 'Architectural Design') defaultIcon = '📐';
     if (formData.category === 'Drilling') defaultIcon = '⚙️';
     if (formData.category === 'Plumbing') defaultIcon = '🚰';
     if (formData.category === 'Aluminum') defaultIcon = '🪟';
-    if (formData.category === 'Structural Materials') defaultIcon = '🧱';
 
     const newAsset = {
-      id: products.length + 1,
-      name: formData.name,
-      category: formData.category,
-      ngn: `₦${baseNgnNum.toLocaleString()}`,
-      usd: `$${baseUsdNum.toLocaleString()}`,
-      dutyNgn: `₦${calculatedDutyNgn.toLocaleString()}`,
-      dutyUsd: `$${calculatedDutyUsd.toLocaleString()}`,
-      totalNgn: `₦${totalNgnNum.toLocaleString()}`,
-      totalUsd: `$${totalUsdNum.toLocaleString()}`,
-      origin: formData.origin,
-      type: formData.type,
-      color: themeColor,
-      bg: themeBg,
-      icon: defaultIcon
+      id: products.length + 1, name: formData.name, category: formData.category,
+      ngn: `₦${baseNgnNum.toLocaleString()}`, usd: `$${baseUsdNum.toLocaleString()}`,
+      dutyNgn: `₦${calculatedDutyNgn.toLocaleString()}`, dutyUsd: `$${calculatedDutyUsd.toLocaleString()}`,
+      totalNgn: `₦${totalNgnNum.toLocaleString()}`, totalUsd: `$${totalUsdNum.toLocaleString()}`,
+      origin: formData.origin, type: formData.type, color: themeColor, bg: themeBg, icon: defaultIcon
     };
 
-    // Update state to add item to marketplace instantly
     setProducts([newAsset, ...products]);
-    
-    // Reset fields and jump user to view their asset live
     setFormData({ name: '', category: 'Prefab Structural', baseNgn: '', origin: '', type: 'CHINA IMPORTED' });
     setActiveTab('market');
     alert('Asset successfully cataloged into the Global Procurement Matrix!');
   };
 
-  // Safe structural fallback variables for tracking logic
+  const handlePrintMock = () => {
+    alert(`--- OFFICIAL PROFORMA INVOICE GENERATED ---\nCustomer Type: ${procurementMode.toUpperCase()}\n${procurementMode === 'corporate' ? `Company: ${corpDetails.companyName}\nTIN: ${corpDetails.tinNumber}\nPO Ref: ${corpDetails.poNumber || 'N/A'}\n` : ''}Item: ${modalItem.name}\nTotal Due: ${viewMode === 'NGN' ? modalItem.totalNgn : modalItem.totalUsd}\n\nInvoice file sent to printing queue!`);
+  };
+
   const isDesign = modalItem?.category === 'Architectural Design';
   const label1 = isDesign ? '1. Draft' : '1. Factory';
   const label2 = isDesign ? '2. Render' : '2. Transit';
@@ -178,7 +146,7 @@ export default function Home() {
                       <span style={{ fontSize: '16px', fontWeight: '800', color: '#111827' }}>{viewMode === 'NGN' ? product.ngn : product.usd}</span>
                       <span style={{ fontSize: '11px', color: '#6b7280', display: 'block' }}>FOB Base Price</span>
                     </div>
-                    <button onClick={() => { setModalItem(product); setInvoiceConfirmed(false); setTrackingStep(1); setShowModal(true); }} style={{ backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '9px 14px', borderRadius: '6px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}>Request Invoice</button>
+                    <button onClick={() => { setModalItem(product); setInvoiceConfirmed(false); setTrackingStep(1); setProcurementMode('individual'); setShowModal(true); }} style={{ backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '9px 14px', borderRadius: '6px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}>Request Invoice</button>
                   </div>
                 </div>
               ))}
@@ -186,99 +154,95 @@ export default function Home() {
           </main>
         </>
       ) : (
-        /* FUNCTIONAL SUPPLIER FACTORY PORTAL FORM */
-        <main style={{ maxWidth: '540px', margin: '40px auto', padding: '30px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-          <div style={{ marginBottom: '20px' }}>
-            <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#111827', marginBottom: '4px' }}>Global Asset Onboarding</h2>
-            <p style={{ fontSize: '13px', color: '#6b7280' }}>Deploy equipment production lines or layout blueprints instantly to the front-facing grid.</p>
-          </div>
-
+        /* FACTORY PORTAL FORM */
+        <main style={{ maxWidth: '540px', margin: '40px auto', padding: '30px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+          <h2 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '4px' }}>Global Asset Onboarding</h2>
+          <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '20px' }}>Deploy blueprints or equipment directly to the front-facing matrix.</p>
           <form onSubmit={handleOnboardAsset} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', marginBottom: '6px', color: '#374151' }}>Asset/Product Title</label>
-              <input type="text" placeholder="e.g., Luxury Custom Aluminum Folding Door" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required style={{ width: '100%', padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '14px', boxSizing: 'border-box' }} />
-            </div>
-
+            <input type="text" placeholder="Asset/Product Title" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required style={{ width: '100%', padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '14px' }} />
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', marginBottom: '6px', color: '#374151' }}>Sector Category</label>
-                <select value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} style={{ width: '100%', padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '14px', backgroundColor: '#fff', boxSizing: 'border-box' }}>
-                  <option value="Prefab Structural">Prefab & Capsule Units</option>
-                  <option value="Architectural Design">Interior/Exterior Design</option>
-                  <option value="Drilling">Borehole Drilling</option>
-                  <option value="Plumbing">Industrial Plumbing</option>
-                  <option value="Aluminum">Aluminum Products</option>
-                  <option value="Structural Materials">Structural Materials</option>
-                </select>
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', marginBottom: '6px', color: '#374151' }}>Procurement Type</label>
-                <select value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})} style={{ width: '100%', padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '14px', backgroundColor: '#fff', boxSizing: 'border-box' }}>
-                  <option value="CHINA IMPORTED">CHINA IMPORTED</option>
-                  <option value="LOCAL DISTRIBUTOR">LOCAL DISTRIBUTOR</option>
-                  <option value="DESIGN PACKAGE">DESIGN PACKAGE</option>
-                </select>
-              </div>
+              <select value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} style={{ padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db' }}>
+                <option value="Prefab Structural">Prefab & Capsule Units</option>
+                <option value="Architectural Design">Interior/Exterior Design</option>
+                <option value="Drilling">Borehole Drilling</option>
+                <option value="Plumbing">Industrial Plumbing</option>
+                <option value="Aluminum">Aluminum Products</option>
+              </select>
+              <select value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})} style={{ padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db' }}>
+                <option value="CHINA IMPORTED">CHINA IMPORTED</option>
+                <option value="LOCAL DISTRIBUTOR">LOCAL DISTRIBUTOR</option>
+                <option value="DESIGN PACKAGE">DESIGN PACKAGE</option>
+              </select>
             </div>
-
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', marginBottom: '6px', color: '#374151' }}>Base Cost Price (NGN ₦)</label>
-                <input type="number" placeholder="Value in Naira" value={formData.baseNgn} onChange={(e) => setFormData({...formData, baseNgn: e.target.value})} required style={{ width: '100%', padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '14px', boxSizing: 'border-box' }} />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', marginBottom: '6px', color: '#374151' }}>Logistics Hub Location</label>
-                <input type="text" placeholder="e.g., Foshan Plant, China" value={formData.origin} onChange={(e) => setFormData({...formData, origin: e.target.value})} required style={{ width: '100%', padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '14px', boxSizing: 'border-box' }} />
-              </div>
+              <input type="number" placeholder="Base Cost Price (NGN ₦)" value={formData.baseNgn} onChange={(e) => setFormData({...formData, baseNgn: e.target.value})} required style={{ padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db' }} />
+              <input type="text" placeholder="Logistics Hub Location" value={formData.origin} onChange={(e) => setFormData({...formData, origin: e.target.value})} required style={{ padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db' }} />
             </div>
-
-            <button type="submit" style={{ width: '100%', backgroundColor: '#111827', color: '#fff', padding: '13px', borderRadius: '6px', border: 'none', fontWeight: '700', fontSize: '14px', cursor: 'pointer', marginTop: '10px' }}>
-              Publish Node to Global Grid
-            </button>
+            <button type="submit" style={{ backgroundColor: '#111827', color: '#fff', padding: '13px', borderRadius: '6px', border: 'none', fontWeight: '700', cursor: 'pointer' }}>Publish Node to Grid</button>
           </form>
         </main>
       )}
 
-      {/* OVERLAY MODAL FOR PROFORMA & STEP CONTROLS */}
+      {/* DUAL MODE OVERLAY MODAL */}
       {showModal && modalItem && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(11,24,39,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ backgroundColor: '#ffffff', padding: '25px', borderRadius: '12px', maxWidth: '440px', width: '100%', margin: '20px', position: 'relative', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
+          <div style={{ backgroundColor: '#ffffff', padding: '25px', borderRadius: '12px', maxWidth: '460px', width: '100%', margin: '20px', position: 'relative', maxExtents: '90vh', overflowY: 'auto' }}>
             <button onClick={() => setShowModal(false)} style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', color: '#9ca3af' }}>✕</button>
             
             {!invoiceConfirmed ? (
               <>
-                <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '5px' }}>Proforma Pricing Sheet</h3>
-                <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '15px' }}>Verified trade clearance matrix and port tariffs values.</p>
+                <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '4px' }}>Proforma Pricing Sheet</h3>
+                <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '15px' }}>Select profile context below to streamline settlement documentation.</p>
                 
-                <div style={{ backgroundColor: '#f3f4f6', padding: '12px', borderRadius: '6px', marginBottom: '15px', fontSize: '13px' }}>
-                  <strong>Asset Line:</strong> {modalItem.name} {modalItem.icon}
-                  <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '3px' }}>FOB Dispatch: {modalItem.origin}</div>
+                {/* DUAL INTERACTIVE TOGGLE SWAPPER */}
+                <div style={{ display: 'flex', backgroundColor: '#f3f4f6', borderRadius: '8px', padding: '4px', marginBottom: '15px' }}>
+                  <button type="button" onClick={() => setProcurementMode('individual')} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', backgroundColor: procurementMode === 'individual' ? '#ffffff' : 'transparent', color: procurementMode === 'individual' ? '#111827' : '#6b7280', boxShadow: procurementMode === 'individual' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none' }}>👤 Individual Client</button>
+                  <button type="button" onClick={() => setProcurementMode('corporate')} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', backgroundColor: procurementMode === 'corporate' ? '#ffffff' : 'transparent', color: procurementMode === 'corporate' ? '#111827' : '#6b7280', boxShadow: procurementMode === 'corporate' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none' }}>🏢 Corporate / Firm</button>
                 </div>
 
-                <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '10px', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>FOB Port Base Liability:</span><strong>{viewMode === 'NGN' ? modalItem.ngn : modalItem.usd}</strong></div>
-                  
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Customs Duty Premium:</span>
-                    <strong>{isDesign ? 'EXEMPT (Digital Asset)' : (viewMode === 'NGN' ? modalItem.dutyNgn : modalItem.dutyUsd)}</strong>
+                {/* DYNAMIC FORM INJECTION FOR COMPANIES */}
+                {procurementMode === 'corporate' && (
+                  <div style={{ padding: '12px', borderRadius: '8px', border: '1px dashed #16a34a', backgroundColor: '#f0fdf4', marginBottom: '15px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <span style={{ fontSize: '11px', fontWeight: '800', color: '#16a34a', textTransform: 'uppercase' }}>Corporate Validation Fields</span>
+                    <input type="text" placeholder="Registered Company Name" value={corpDetails.companyName} onChange={(e) => setCorpDetails({...corpDetails, companyName: e.target.value})} style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }} />
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                      <input type="text" placeholder="Tax TIN Number" value={corpDetails.tinNumber} onChange={(e) => setCorpDetails({...corpDetails, tinNumber: e.target.value})} style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }} />
+                      <input type="text" placeholder="Internal PO Reference (Optional)" value={corpDetails.poNumber} onChange={(e) => setCorpDetails({...corpDetails, poNumber: e.target.value})} style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }} />
+                    </div>
                   </div>
+                )}
 
+                <div style={{ backgroundColor: '#f3f4f6', padding: '12px', borderRadius: '6px', marginBottom: '15px', fontSize: '13px' }}>
+                  <strong>Asset Line:</strong> {modalItem.name} {modalItem.icon}
+                  <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '3px' }}>Dispatch Hub: {modalItem.origin}</div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', borderTop: '1px solid #e5e7eb', paddingTop: '10px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>FOB Port Base Liability:</span><strong>{viewMode === 'NGN' ? modalItem.ngn : modalItem.usd}</strong></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Customs Duty Premium:</span><strong>{isDesign ? 'EXEMPT (Digital Asset)' : (viewMode === 'NGN' ? modalItem.dutyNgn : modalItem.dutyUsd)}</strong></div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed #d1d5db', paddingTop: '8px', marginTop: '4px', fontSize: '14px', fontWeight: '800' }}>
-                    <span>Total Project Settlement:</span>
+                    <span>Total Settlement Due:</span>
                     <span style={{ color: '#16a34a' }}>{viewMode === 'NGN' ? modalItem.totalNgn : modalItem.totalUsd}</span>
                   </div>
                 </div>
                 
-                <button onClick={() => setInvoiceConfirmed(true)} style={{ width: '100%', backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '12px', borderRadius: '6px', fontWeight: '700', marginTop: '20px', cursor: 'pointer' }}>
-                  {isDesign ? 'Confirm & Process Digital Delivery' : 'Confirm & Initialize Tracking'}
-                </button>
+                <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                  {procurementMode === 'corporate' && (
+                    <button onClick={handlePrintMock} style={{ backgroundColor: '#111827', color: '#fff', border: 'none', padding: '12px', borderRadius: '6px', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>🖨️ Print Proforma</button>
+                  )}
+                  <button onClick={() => setInvoiceConfirmed(true)} style={{ flex: 1, backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '12px', borderRadius: '6px', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>
+                    Confirm & Track Order
+                  </button>
+                </div>
               </>
             ) : (
               <>
                 <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '4px' }}>Procurement Tracking Node</h3>
-                <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '25px' }}>Real-time freight cargo telemetry ledger for your order.</p>
+                <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '20px' }}>
+                  Account Assignment: <strong style={{ color: '#111827' }}>{procurementMode === 'corporate' ? corpDetails.companyName || 'Corporate Account' : 'Individual Builder'}</strong>
+                </p>
 
-                {/* VISUAL TRACKING FILL BAR */}
+                {/* PROGRESS SEGMENTS */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '4px', marginBottom: '25px' }}>
                   <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 1 ? '#16a34a' : '#e5e7eb' }} />
                   <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 2 ? '#16a34a' : '#e5e7eb' }} />
@@ -286,7 +250,7 @@ export default function Home() {
                   <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 4 ? '#16a34a' : '#e5e7eb' }} />
                 </div>
 
-                {/* STEP LABELS */}
+                {/* TRACKER LABELS */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: '700', marginBottom: '20px', color: '#6b7280' }}>
                   <span style={{ color: trackingStep === 1 ? '#16a34a' : '#6b7280' }}>{label1}</span>
                   <span style={{ color: trackingStep === 2 ? '#16a34a' : '#6b7280' }}>{label2}</span>
@@ -294,21 +258,21 @@ export default function Home() {
                   <span style={{ color: trackingStep === 4 ? '#16a34a' : '#6b7280' }}>{label4}</span>
                 </div>
 
-                {/* STATUS DETAILS TEXT LOGGER */}
+                {/* LOG DATA PANEL */}
                 <div style={{ backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', padding: '15px', borderRadius: '8px', marginBottom: '25px', fontSize: '13px' }}>
                   {!isDesign ? (
                     <div>
-                      {trackingStep === 1 && <div>🏭 <strong>Stage 1: Factory Production</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Your materials are currently being crated, serialized, and balanced for container weight metrics at the manufacturing hub.</p></div>}
-                      {trackingStep === 2 && <div>🚢 <strong>Stage 2: Ocean Freight Transit</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Cargo assigned to global vessel lanes. Moving securely across main shipping corridors toward the Nigerian entry port.</p></div>}
-                      {trackingStep === 3 && <div>🛃 <strong>Stage 3: Customs Duty Clearing</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Manifest matching protocols initiated. Port tariff calculations and clearing documentation are undergoing official approval.</p></div>}
-                      {trackingStep === 4 && <div>✅ <strong>Stage 4: Ready for Delivery/Pickup</strong><p style={{ margin: '4px 0 0', color: '#16a34a', fontSize: '12px', fontWeight: '600' }}>Asset clearance complete! Items are stored securely at destination yards and ready for logistics dispatch handlers.</p></div>}
+                      {trackingStep === 1 && <div>🏭 <strong>Stage 1: Factory Production</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Your materials are currently being crated and serialized for container logistics.</p></div>}
+                      {trackingStep === 2 && <div>🚢 <strong>Stage 2: Ocean Freight Transit</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Cargo moving securely across main shipping corridors toward the entry port.</p></div>}
+                      {trackingStep === 3 && <div>🛃 <strong>Stage 3: Customs Duty Clearing</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Port tariff calculations and official manifest matching are undergoing approval.</p></div>}
+                      {trackingStep === 4 && <div>✅ <strong>Stage 4: Ready for Delivery</strong><p style={{ margin: '4px 0 0', color: '#16a34a', fontSize: '12px', fontWeight: '600' }}>Clearance complete! Items are ready for site dispatch or terminal pickup.</p></div>}
                     </div>
                   ) : (
                     <div>
-                      {trackingStep === 1 && <div>✏️ <strong>Stage 1: Spatial Drafting</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Design partners are translating room dimensions and shell schematics into raw 2D layout framing blueprints.</p></div>}
-                      {trackingStep === 2 && <div>🖼️ <strong>Stage 2: 3D High-Fidelity Rendering</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Materials mapping, structural elevations, and lighting profiles are being rendered into photo-realistic visualizations.</p></div>}
-                      {trackingStep === 3 && <div>🔄 <strong>Stage 3: Quality Compliance & Review</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Reviewing structural configurations against real manufacturing constraints to guarantee complete installation accuracy.</p></div>}
-                      {trackingStep === 4 && <div>📩 <strong>Stage 4: Asset Packages Dispatched</strong><p style={{ margin: '4px 0 0', color: '#16a34a', fontSize: '12px', fontWeight: '600' }}>Complete ultra-high-resolution blueprint package and material specifications files securely emailed to your account.</p></div>}
+                      {trackingStep === 1 && <div>✏️ <strong>Stage 1: Spatial Drafting</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Translating space shell boundaries into raw structural framing layout lines.</p></div>}
+                      {trackingStep === 2 && <div>🖼️ <strong>Stage 2: High-Fidelity Rendering</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Material shaders and lighting profiles are being cooked into realistic 3D imagery.</p></div>}
+                      {trackingStep === 3 && <div>🔄 <strong>Stage 3: Quality Compliance</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Reviewing configurations against structural constraints to guarantee building fit.</p></div>}
+                      {trackingStep === 4 && <div>📩 <strong>Stage 4: Packages Dispatched</strong><p style={{ margin: '4px 0 0', color: '#16a34a', fontSize: '12px', fontWeight: '600' }}>High-resolution schematic plans and vector documents pushed straight to your profile portal email.</p></div>}
                     </div>
                   )}
                 </div>
