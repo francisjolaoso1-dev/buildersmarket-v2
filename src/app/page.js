@@ -47,28 +47,34 @@ export default function Home() {
   const [formOrigin, setFormOrigin] = useState('');
   const [formType, setFormType] = useState('CHINA IMPORTED');
 
-  const handleAuthSubmit = (e) => {
+ const handleAuthSubmit = async (e) => {
     e.preventDefault();
+    
+    // Import your supabase client instance at the top of your file first!
+    // import { createClient } from '@supabase/supabase-js';
+    // const supabase = createClient('YOUR_SUPABASE_URL', 'YOUR_SUPABASE_ANON_KEY');
+
     if (authView === 'register') {
-      const newUser = {
-        name: authName || authEmail.split('@')[0] || 'User',
+      const { data, error } = await supabase.auth.signUp({
         email: authEmail,
-        accountType: authTier,
-        companyName: authCorpName,
-        tinNumber: authCorpTin
-      };
-      setCurrentUser(newUser);
-      setProcurementMode(authTier);
-      if (authTier === 'corporate') {
-        setCorpDetails({ companyName: authCorpName, tinNumber: authCorpTin, poNumber: '' });
-      }
+        password: authPassword,
+        options: {
+          data: {
+            full_name: authName,
+            account_type: authTier,
+            company_name: authCorpName
+          }
+        }
+      });
+      if (error) alert(error.message);
+      else alert("Check your email for the confirmation link!");
     } else {
-      const mockUser = {
-        name: authEmail ? authEmail.split('@')[0] : 'Builder',
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: authEmail,
-        accountType: 'individual'
-      };
-      setCurrentUser(mockUser);
+        password: authPassword,
+      });
+      if (error) alert("Invalid credentials");
+      else setCurrentUser(data.user);
     }
     setShowAuthModal(false);
   };
