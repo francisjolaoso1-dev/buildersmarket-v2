@@ -15,8 +15,8 @@ export default function Home() {
     setMessage('');
 
     // Safely initialize Supabase only inside the function when clicked
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;sb_publishable_ZHyc6tlTCwKVgG-8KAUZJw_zvtQsY4z
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4bmttamJuaXllcnV3c2hid3FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njg5NzYsImV4cCI6MjA5NjA0NDk3Nn0.RaDu8XkzHtLHpa1Lgjx6f_7OTqQWx0d19ZdplvwT8nA
     
     if (!supabaseUrl || !supabaseAnonKey) {
       setMessage('Configuration Error: Missing database connection keys in Vercel settings.');
