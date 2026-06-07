@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'BuildersMarket',
-  description: 'Cross-Border Procurement Portal',
+  title: 'BuildersMarket Portal',
+  description: 'Global Procurement Matrix',
 }
 
 export default function RootLayout({ children }) {
