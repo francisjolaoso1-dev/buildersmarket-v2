@@ -1,11 +1,11 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState('NGN'); 
   const [showModal, setShowModal] = useState(false);
-  const [modalItem, setModalItem] = useState({ name: '', ngn: '', usd: '', dutyNgn: '', dutyUsd: '', totalNgn: '', totalUsd: '', origin: '', icon: '', category: '' });
+  const [modalItem, setModalItem] = useState(null);
   const [activeTab, setActiveTab] = useState('market');
   const [selectedCategory, setSelectedCategory] = useState('All');
   
@@ -34,9 +34,12 @@ export default function Home() {
     return matchesSearch && matchesCategory;
   });
 
-  // Safe tracking label system
-  const isDesign = modalItem.category === 'Architectural Design';
-  const steps = isDesign ? ['1. Draft', '2. Render', '3. Review', '4. Sent'] : ['1. Factory', '2. Transit', '3. Clearing', '4. Arrived'];
+  // Safely fallback variables to prevent server hydration mismatches
+  const isDesign = modalItem?.category === 'Architectural Design';
+  const label1 = isDesign ? '1. Draft' : '1. Factory';
+  const label2 = isDesign ? '2. Render' : '2. Transit';
+  const label3 = isDesign ? '3. Review' : '3. Clearing';
+  const label4 = isDesign ? '4. Sent' : '4. Arrived';
 
   return (
     <div style={{ fontFamily: 'system-ui, sans-serif', backgroundColor: '#f9fafb', minHeight: '100vh', color: '#111827' }}>
@@ -124,7 +127,7 @@ export default function Home() {
       )}
 
       {/* OVERLAY MODAL FOR PROFORMA & STEP CONTROLS */}
-      {showModal && (
+      {showModal && modalItem && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(11,24,39,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div style={{ backgroundColor: '#ffffff', padding: '25px', borderRadius: '12px', maxWidth: '440px', width: '100%', margin: '20px', position: 'relative', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
             <button onClick={() => setShowModal(false)} style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', color: '#9ca3af' }}>✕</button>
@@ -170,5 +173,45 @@ export default function Home() {
                   <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 4 ? '#16a34a' : '#e5e7eb' }} />
                 </div>
 
-                {/* SECURE STATE MAPPED LABELS */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: '700', marginBottom: '20px',
+                {/* TRACKING STEP LABELS */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: '700', marginBottom: '20px', color: '#6b7280' }}>
+                  <span style={{ color: trackingStep === 1 ? '#16a34a' : '#6b7280' }}>{label1}</span>
+                  <span style={{ color: trackingStep === 2 ? '#16a34a' : '#6b7280' }}>{label2}</span>
+                  <span style={{ color: trackingStep === 3 ? '#16a34a' : '#6b7280' }}>{label3}</span>
+                  <span style={{ color: trackingStep === 4 ? '#16a34a' : '#6b7280' }}>{label4}</span>
+                </div>
+
+                {/* TEXT STATUS LOGGER BOX */}
+                <div style={{ backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', padding: '15px', borderRadius: '8px', marginBottom: '25px', fontSize: '13px' }}>
+                  {!isDesign ? (
+                    <div>
+                      {trackingStep === 1 && <div>🏭 <strong>Stage 1: Factory Production</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Your materials are currently being crated, serialized, and balanced for container weight metrics at the manufacturing hub.</p></div>}
+                      {trackingStep === 2 && <div>🚢 <strong>Stage 2: Ocean Freight Transit</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Cargo assigned to global vessel lanes. Moving securely across main shipping corridors toward the Nigerian entry port.</p></div>}
+                      {trackingStep === 3 && <div>🛃 <strong>Stage 3: Customs Duty Clearing</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Manifest matching protocols initiated. Port tariff calculations and clearing documentation are undergoing official approval.</p></div>}
+                      {trackingStep === 4 && <div>✅ <strong>Stage 4: Ready for Delivery/Pickup</strong><p style={{ margin: '4px 0 0', color: '#16a34a', fontSize: '12px', fontWeight: '600' }}>Asset clearance complete! Items are stored securely at destination yards and ready for logistics dispatch handlers.</p></div>}
+                    </div>
+                  ) : (
+                    <div>
+                      {trackingStep === 1 && <div>✏️ <strong>Stage 1: Spatial Drafting</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Design partners are translating room dimensions and shell schematics into raw 2D layout framing blueprints.</p></div>}
+                      {trackingStep === 2 && <div>🖼️ <strong>Stage 2: 3D High-Fidelity Rendering</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Materials mapping, structural elevations, and lighting profiles are being rendered into photo-realistic visualizations.</p></div>}
+                      {trackingStep === 3 && <div>🔄 <strong>Stage 3: Quality Compliance & Review</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Reviewing structural configurations against real manufacturing constraints to guarantee complete installation accuracy.</p></div>}
+                      {trackingStep === 4 && <div>📩 <strong>Stage 4: Asset Packages Dispatched</strong><p style={{ margin: '4px 0 0', color: '#16a34a', fontSize: '12px', fontWeight: '600' }}>Complete ultra-high-resolution blueprint package and material specifications files securely emailed to your account.</p></div>}
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+                  <button disabled={trackingStep === 1} onClick={() => setTrackingStep(prev => prev - 1)} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #d1d5db', cursor: 'pointer', fontSize: '12px', fontWeight: '600', backgroundColor: '#fff' }}>⏮️ Prev Stage</button>
+                  <button disabled={trackingStep === 4} onClick={() => setTrackingStep(prev => prev + 1)} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: '600', backgroundColor: '#111827', color: '#fff' }}>Next Stage ⏭️</button>
+                </div>
+
+                <button onClick={() => setShowModal(false)} style={{ width: '100%', backgroundColor: '#6b7280', color: 'white', padding: '10px', borderRadius: '6px', fontWeight: '600', border: 'none', cursor: 'pointer', fontSize: '13px' }}>Close Console</button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}
