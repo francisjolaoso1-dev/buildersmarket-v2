@@ -23,7 +23,7 @@ export default function Home() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authView, setAuthView] = useState('login');
   
-  // Auth Form State Explicitly Separated for Stability
+  // Auth Form State
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [authName, setAuthName] = useState('');
@@ -126,8 +126,6 @@ export default function Home() {
 
   return (
     <div style={{ fontFamily: 'system-ui, sans-serif', backgroundColor: '#f9fafb', minHeight: '100vh', color: '#111827' }}>
-      
-      {/* HEADER NAVBAR */}
       <header style={{ backgroundColor: '#ffffff', borderBottom: '1px solid #e5e7eb', padding: '15px 30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{ fontSize: '26px' }}>🏗️</span>
@@ -135,40 +133,29 @@ export default function Home() {
             builders<span style={{ color: '#111827' }}>market</span>
           </div>
         </div>
-
         <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
           <button onClick={() => setActiveTab('market')} style={{ background: 'none', border: 'none', color: activeTab === 'market' ? '#16a34a' : '#4b5563', fontWeight: '600', cursor: 'pointer' }}>Marketplace</button>
           <button onClick={() => setActiveTab('supplier')} style={{ background: 'none', border: 'none', color: activeTab === 'supplier' ? '#16a34a' : '#4b5563', fontWeight: '600', cursor: 'pointer' }}>🇨🇳 Factory Portal</button>
-          
           <div style={{ border: '1px solid #d1d5db', borderRadius: '20px', padding: '3px', display: 'flex', backgroundColor: '#f3f4f6', marginRight: '5px' }}>
             <button onClick={() => setViewMode('NGN')} style={{ border: 'none', padding: '5px 12px', borderRadius: '16px', cursor: 'pointer', fontWeight: '700', fontSize: '12px', backgroundColor: viewMode === 'NGN' ? '#111827' : 'transparent', color: viewMode === 'NGN' ? '#ffffff' : '#4b5563' }}>₦ NGN</button>
             <button onClick={() => setViewMode('USD')} style={{ border: 'none', padding: '5px 12px', borderRadius: '16px', cursor: 'pointer', fontWeight: '700', fontSize: '12px', backgroundColor: viewMode === 'USD' ? '#111827' : 'transparent', color: viewMode === 'USD' ? '#ffffff' : '#4b5563' }}>$ USD</button>
           </div>
-
           {currentUser ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderLeft: '1px solid #e5e7eb', paddingLeft: '15px' }}>
-              <span style={{ fontSize: '13px', fontWeight: '600' }}>
-                👋 {currentUser.name} <span style={{ fontSize: '10px', backgroundColor: currentUser.accountType === 'corporate' ? '#dbffe4' : '#e5e7eb', color: currentUser.accountType === 'corporate' ? '#15803d' : '#111827', padding: '2px 6px', borderRadius: '10px', marginLeft: '4px', fontWeight: '800' }}>{(currentUser.accountType || 'individual').toUpperCase()}</span>
-              </span>
+              <span style={{ fontSize: '13px', fontWeight: '600' }}>👋 {currentUser.name} <span style={{ fontSize: '10px', backgroundColor: currentUser.accountType === 'corporate' ? '#dbffe4' : '#e5e7eb', color: currentUser.accountType === 'corporate' ? '#15803d' : '#111827', padding: '2px 6px', borderRadius: '10px', marginLeft: '4px', fontWeight: '800' }}>{(currentUser.accountType || 'individual').toUpperCase()}</span></span>
               <button onClick={handleLogout} style={{ background: 'none', border: '1px solid #d1d5db', padding: '5px 10px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', fontWeight: '600' }}>Logout</button>
             </div>
           ) : (
-            <button onClick={() => { setAuthView('login'); setShowAuthModal(true); }} style={{ backgroundColor: '#111827', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>
-              Sign In
-            </button>
+            <button onClick={() => { setAuthView('login'); setShowAuthModal(true); }} style={{ backgroundColor: '#111827', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>Sign In</button>
           )}
         </div>
       </header>
 
       {activeTab === 'market' ? (
         <>
-          {/* HERO BAR */}
           <section style={{ backgroundColor: '#111827', color: '#ffffff', padding: '50px 20px', textAlign: 'center' }}>
             <h1 style={{ fontSize: '34px', fontWeight: '800', marginBottom: '10px' }}>Global Procurement Matrix</h1>
-            <p style={{ fontSize: '15px', color: '#9ca3af', maxWidth: '650px', margin: '0 auto 25px' }}>
-              Direct pipeline for heavy machinery, prefabricated houses, and premium interior/exterior designs.
-            </p>
-            
+            <p style={{ fontSize: '15px', color: '#9ca3af', maxWidth: '650px', margin: '0 auto 25px' }}>Direct pipeline for heavy machinery, prefabricated houses, and premium interior/exterior designs.</p>
             <div style={{ backgroundColor: '#ffffff', padding: '10px', borderRadius: '12px', maxWidth: '780px', margin: '0 auto', display: 'flex', gap: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
               <input type="text" placeholder="Search structures, specs, or design portfolios..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{ flex: 2, padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '14px', color: '#111827', boxSizing: 'border-box' }} />
               <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} style={{ flex: 1, padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '14px', backgroundColor: '#f9fafb', color: '#111827', cursor: 'pointer' }}>
@@ -181,8 +168,6 @@ export default function Home() {
               </select>
             </div>
           </section>
-
-          {/* GRID DISPLAY */}
           <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '25px' }}>
               {filteredProducts.map((product) => (
@@ -191,25 +176,17 @@ export default function Home() {
                     {product.icon}
                     <span style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '10px', fontWeight: '700', color: product.color, backgroundColor: product.bg, padding: '4px 8px', borderRadius: '20px', border: '1px solid currentColor' }}>{product.type}</span>
                   </div>
-
                   <div style={{ padding: '20px', flexGrow: 1 }}>
                     <span style={{ fontSize: '10px', textTransform: 'uppercase', color: '#4b5563', fontWeight: '700', backgroundColor: '#e5e7eb', padding: '3px 6px', borderRadius: '4px' }}>{product.category}</span>
                     <h3 style={{ fontSize: '15px', fontWeight: '700', marginTop: '10px', marginBottom: '6px', minHeight: '42px' }}>{product.name}</h3>
-                    <div style={{ fontSize: '13px', color: '#6b7280' }}>📍 Fulfillment: <strong>{product.origin}</strong></div>
+                    <div style={{ fontSize: '13px', color: '#6b7280' }}> 📍 Fulfillment: <strong>{product.origin}</strong></div>
                   </div>
-
                   <div style={{ padding: '0 20px 20px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f3f4f6', paddingTop: '15px' }}>
                     <div>
                       <span style={{ fontSize: '16px', fontWeight: '800', color: '#111827' }}>{viewMode === 'NGN' ? product.ngn : product.usd}</span>
                       <span style={{ fontSize: '11px', color: '#6b7280', display: 'block' }}>FOB Base Price</span>
                     </div>
-                    <button onClick={() => { 
-                      setModalItem(product); 
-                      setInvoiceConfirmed(false); 
-                      setTrackingStep(1); 
-                      setProcurementMode(currentUser ? currentUser.accountType : 'individual');
-                      setShowModal(true); 
-                    }} style={{ backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '9px 14px', borderRadius: '6px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}>Request Invoice</button>
+                    <button onClick={() => { setModalItem(product); setInvoiceConfirmed(false); setTrackingStep(1); setProcurementMode(currentUser ? currentUser.accountType : 'individual'); setShowModal(true); }} style={{ backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '9px 14px', borderRadius: '6px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}>Request Invoice</button>
                   </div>
                 </div>
               ))}
@@ -217,7 +194,6 @@ export default function Home() {
           </main>
         </>
       ) : (
-        /* FACTORY PORTAL */
         <main style={{ maxWidth: '540px', margin: '40px auto', padding: '30px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
           <h2 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '4px' }}>Global Asset Onboarding</h2>
           <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '20px' }}>Deploy blueprints or equipment directly to the front-facing matrix.</p>
@@ -246,19 +222,12 @@ export default function Home() {
         </main>
       )}
 
-      {/* SIGN IN & REGISTRATION MODAL OVERLAY */}
       {showAuthModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(11,24,39,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }}>
           <div style={{ backgroundColor: '#ffffff', padding: '30px', borderRadius: '12px', maxWidth: '400px', width: '100%', margin: '20px', position: 'relative' }}>
             <button onClick={() => setShowAuthModal(false)} style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', color: '#9ca3af' }}>✕</button>
-            
-            <h3 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '5px', textAlign: 'center' }}>
-              {authView === 'login' ? 'Access Portal Gateway' : 'Create Procurement Profile'}
-            </h3>
-            <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '20px', textAlign: 'center' }}>
-              {authView === 'login' ? 'Enter credentials to manage active trade files.' : 'Select builder or firm account level.'}
-            </p>
-
+            <h3 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '5px', textAlign: 'center' }}>{authView === 'login' ? 'Access Portal Gateway' : 'Create Procurement Profile'}</h3>
+            <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '20px', textAlign: 'center' }}>{authView === 'login' ? 'Enter credentials to manage active trade files.' : 'Select builder or firm account level.'}</p>
             <form onSubmit={handleAuthSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {authView === 'register' && (
                 <div>
@@ -266,17 +235,14 @@ export default function Home() {
                   <input type="text" required placeholder="Francis Jolaoso" value={authName} onChange={(e) => setAuthName(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }} />
                 </div>
               )}
-
               <div>
                 <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', marginBottom: '4px' }}>Email Address</label>
                 <input type="email" required placeholder="name@domain.com" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }} />
               </div>
-
               <div>
                 <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', marginBottom: '4px' }}>Password</label>
                 <input type="password" required placeholder="••••••••" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }} />
               </div>
-
               {authView === 'register' && (
                 <>
                   <div>
@@ -286,7 +252,6 @@ export default function Home() {
                       <option value="corporate">🏢 Corporate Firm/Company Account</option>
                     </select>
                   </div>
-
                   {authTier === 'corporate' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '10px', backgroundColor: '#f0fdf4', borderRadius: '6px', border: '1px dashed #16a34a' }}>
                       <input type="text" placeholder="Registered Company Name" required={authTier === 'corporate'} value={authCorpName} onChange={(e) => setAuthCorpName(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }} />
@@ -295,12 +260,8 @@ export default function Home() {
                   )}
                 </>
               )}
-
-              <button type="submit" style={{ width: '100%', backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '12px', borderRadius: '6px', fontWeight: '700', fontSize: '14px', cursor: 'pointer', marginTop: '5px' }}>
-                {authView === 'login' ? 'Authenticate Entry' : 'Register Profile Matrix'}
-              </button>
+              <button type="submit" style={{ width: '100%', backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '12px', borderRadius: '6px', fontWeight: '700', fontSize: '14px', cursor: 'pointer', marginTop: '5px' }}>{authView === 'login' ? 'Authenticate Entry' : 'Register Profile Matrix'}</button>
             </form>
-
             <div style={{ textAlign: 'center', marginTop: '15px', fontSize: '12px', color: '#4b5563' }}>
               {authView === 'login' ? (
                 <span>New builder? <button onClick={() => setAuthView('register')} style={{ background: 'none', border: 'none', color: '#16a34a', fontWeight: '700', cursor: 'pointer', padding: 0 }}>Create account</button></span>
@@ -312,24 +273,18 @@ export default function Home() {
         </div>
       )}
 
-      {/* DUAL MODE PROCUREMENT OVERLAY MODAL */}
       {showModal && modalItem && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(11,24,39,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div style={{ backgroundColor: '#ffffff', padding: '25px', borderRadius: '12px', maxWidth: '460px', width: '100%', margin: '20px', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
             <button onClick={() => setShowModal(false)} style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', color: '#9ca3af' }}>✕</button>
-            
             {!invoiceConfirmed ? (
               <>
                 <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '4px' }}>Proforma Pricing Sheet</h3>
                 <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '15px' }}>Select profile context below to streamline settlement documentation.</p>
-                
-                {/* PROFILE TOGGLE */}
                 <div style={{ display: 'flex', backgroundColor: '#f3f4f6', borderRadius: '8px', padding: '4px', marginBottom: '15px' }}>
                   <button type="button" onClick={() => setProcurementMode('individual')} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', backgroundColor: procurementMode === 'individual' ? '#ffffff' : 'transparent', color: procurementMode === 'individual' ? '#111827' : '#6b7280' }}>👤 Individual Client</button>
                   <button type="button" onClick={() => setProcurementMode('corporate')} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', backgroundColor: procurementMode === 'corporate' ? '#ffffff' : 'transparent', color: procurementMode === 'corporate' ? '#111827' : '#6b7280' }}>🏢 Corporate / Firm</button>
                 </div>
-
-                {/* DYNAMIC CORPORATE DATA INPUT */}
                 {procurementMode === 'corporate' && (
                   <div style={{ padding: '12px', borderRadius: '8px', border: '1px dashed #16a34a', backgroundColor: '#f0fdf4', marginBottom: '15px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <span style={{ fontSize: '11px', fontWeight: '800', color: '#16a34a', textTransform: 'uppercase' }}>Corporate Validation Fields</span>
@@ -340,12 +295,10 @@ export default function Home() {
                     </div>
                   </div>
                 )}
-
                 <div style={{ backgroundColor: '#f3f4f6', padding: '12px', borderRadius: '6px', marginBottom: '15px', fontSize: '13px' }}>
                   <strong>Asset Line:</strong> {modalItem.name} {modalItem.icon}
                   <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '3px' }}>Dispatch Hub: {modalItem.origin}</div>
                 </div>
-
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', borderTop: '1px solid #e5e7eb', paddingTop: '10px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>FOB Port Base Liability:</span><strong>{viewMode === 'NGN' ? modalItem.ngn : modalItem.usd}</strong></div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Customs Duty Premium:</span><strong>{isDesign ? 'EXEMPT (Digital Asset)' : (viewMode === 'NGN' ? modalItem.dutyNgn : modalItem.dutyUsd)}</strong></div>
@@ -354,14 +307,11 @@ export default function Home() {
                     <span style={{ color: '#16a34a' }}>{viewMode === 'NGN' ? modalItem.totalNgn : modalItem.totalUsd}</span>
                   </div>
                 </div>
-                
                 <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
                   {procurementMode === 'corporate' && (
                     <button onClick={() => alert('Invoice ready')} style={{ backgroundColor: '#111827', color: '#fff', border: 'none', padding: '12px', borderRadius: '6px', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>🖨️ Print Proforma</button>
                   )}
-                  <button onClick={() => setInvoiceConfirmed(true)} style={{ flex: 1, backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '12px', borderRadius: '6px', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>
-                    Confirm & Track Order
-                  </button>
+                  <button onClick={() => setInvoiceConfirmed(true)} style={{ flex: 1, backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '12px', borderRadius: '6px', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>Confirm & Track Order</button>
                 </div>
               </>
             ) : (
@@ -370,22 +320,18 @@ export default function Home() {
                 <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '20px' }}>
                   Account Assignment: <strong style={{ color: '#111827' }}>{procurementMode === 'corporate' ? corpDetails.companyName || 'Corporate Account' : (currentUser ? currentUser.name : 'Individual Builder')}</strong>
                 </p>
-
-                {/* TRACKING PATHWAYS */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '4px', marginBottom: '25px' }}>
                   <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 1 ? '#16a34a' : '#e5e7eb' }} />
                   <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 2 ? '#16a34a' : '#e5e7eb' }} />
                   <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 3 ? '#16a34a' : '#e5e7eb' }} />
                   <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 4 ? '#16a34a' : '#e5e7eb' }} />
                 </div>
-
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: '700', marginBottom: '20px', color: '#6b7280' }}>
                   <span style={{ color: trackingStep === 1 ? '#16a34a' : '#6b7280' }}>{label1}</span>
                   <span style={{ color: trackingStep === 2 ? '#16a34a' : '#6b7280' }}>{label2}</span>
                   <span style={{ color: trackingStep === 3 ? '#16a34a' : '#6b7280' }}>{label3}</span>
                   <span style={{ color: trackingStep === 4 ? '#16a34a' : '#6b7280' }}>{label4}</span>
                 </div>
-
                 <div style={{ backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', padding: '15px', borderRadius: '8px', marginBottom: '25px', fontSize: '13px' }}>
                   {!isDesign ? (
                     <div>
@@ -403,19 +349,16 @@ export default function Home() {
                     </div>
                   )}
                 </div>
-
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
                   <button disabled={trackingStep === 1} onClick={() => setTrackingStep(prev => prev - 1)} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #d1d5db', cursor: 'pointer', fontSize: '12px', fontWeight: '600', backgroundColor: '#fff' }}>⏮️ Prev Stage</button>
                   <button disabled={trackingStep === 4} onClick={() => setTrackingStep(prev => prev + 1)} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: '600', backgroundColor: '#111827', color: '#fff' }}>Next Stage ⏭️</button>
                 </div>
-
                 <button onClick={() => setShowModal(false)} style={{ width: '100%', backgroundColor: '#6b7280', color: 'white', padding: '10px', borderRadius: '6px', fontWeight: '600', border: 'none', cursor: 'pointer', fontSize: '13px' }}>Close Console</button>
               </>
             )}
           </div>
         </div>
       )}
-
     </div>
   );
 }
