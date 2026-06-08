@@ -1,9 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
-
-// Initialize Supabase
-const supabase = createClient('YOUR_SUPABASE_URL', 'YOUR_SUPABASE_ANON_KEY');
+import { useState } from 'react';
 
 export default function Home() {
   // Navigation & View States
@@ -27,7 +23,7 @@ export default function Home() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authView, setAuthView] = useState('login');
   
-  // Auth Form States
+  // Auth Form State Explicitly Separated for Stability
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [authName, setAuthName] = useState('');
@@ -35,38 +31,47 @@ export default function Home() {
   const [authCorpName, setAuthCorpName] = useState('');
   const [authCorpTin, setAuthCorpTin] = useState('');
 
-  // PERSISTENCE: Check user session on load
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) setCurrentUser(session.user);
-    });
-  }, []);
+  // Product Catalog State
+  const [products, setProducts] = useState([
+    { id: 1, name: 'Industrial Borehole Submersible Pump (2HP)', category: 'Plumbing', ngn: '₦210,000', usd: '$131.00', dutyNgn: '₦14,700', dutyUsd: '$9.17', totalNgn: '₦224,700', totalUsd: '$140.17', origin: 'Guangdong Shipping Depot', type: 'CHINA IMPORTED', color: '#e53e3e', bg: '#fff5f5', icon: '🚰' },
+    { id: 2, name: 'Premium Aluminum Roofing Sheets (0.55mm)', category: 'Aluminum', ngn: '₦85,000', usd: '$53.00', dutyNgn: '₦5,950', dutyUsd: '$3.71', totalNgn: '₦90,950', totalUsd: '$56.71', origin: 'Abuja Central Warehouse', type: 'LOCAL DISTRIBUTOR', color: '#16a34a', bg: '#f0fdf4', icon: '🏠' },
+    { id: 3, name: 'Luxury Smart Space Capsule House (V8-Series)', category: 'Prefab Structural', ngn: '₦44,800,000', usd: '$28,000.00', dutyNgn: '₦3,136,000', dutyUsd: '$1,960.00', totalNgn: '₦47,936,000', totalUsd: '$29,960.00', origin: 'Foshan Prefab Industry Zone', type: 'CHINA IMPORTED', color: '#2563eb', bg: '#eff6ff', icon: '🚀' },
+    { id: 4, name: 'Premium Capsule Interior Fit-Out & Concept Design', category: 'Architectural Design', ngn: '₦2,400,000', usd: '$1,500.00', dutyNgn: '₦0', dutyUsd: '$0', totalNgn: '₦2,400,000', totalUsd: '$1,500.00', origin: 'Digital Delivery Hub', type: 'DESIGN PACKAGE', color: '#7c3aed', bg: '#f5f3ff', icon: '🛋️' },
+    { id: 5, name: 'Heavy Industrial Borehole Drilling Rig Bit (9 7/8")', category: 'Drilling', ngn: '₦720,000', usd: '$450.00', dutyNgn: '₦50,400', dutyUsd: '$31.50', totalNgn: '₦770,400', totalUsd: '$481.50', origin: 'Tianjin Manufacturing Zone', type: 'CHINA IMPORTED', color: '#e53e3e', bg: '#fff5f5', icon: '⚙️' },
+    { id: 6, name: 'High-Grade Structural Steel H-Beams (Bulk)', category: 'Structural Materials', ngn: '₦340,000', usd: '$212.00', dutyNgn: '₦23,800', dutyUsd: '$14.84', totalNgn: '₦363,800', totalUsd: '$226.84', origin: 'Lagos Port Depot', type: 'LOCAL DISTRIBUTOR', color: '#16a34a', bg: '#f0fdf4', icon: '🏗️' }
+  ]);
 
-  // AUTHENTICATION HANDLER
-  const handleAuthSubmit = async (e) => {
+  const [formName, setFormName] = useState('');
+  const [formCategory, setFormCategory] = useState('Prefab Structural');
+  const [formBaseNgn, setFormBaseNgn] = useState('');
+  const [formOrigin, setFormOrigin] = useState('');
+  const [formType, setFormType] = useState('CHINA IMPORTED');
+
+  const handleAuthSubmit = (e) => {
     e.preventDefault();
     if (authView === 'register') {
-      const { data, error } = await supabase.auth.signUp({
+      const newUser = {
+        name: authName || authEmail.split('@')[0] || 'User',
         email: authEmail,
-        password: authPassword,
-        options: { data: { full_name: authName, account_type: authTier, company_name: authCorpName } }
-      });
-      if (error) alert(error.message);
-      else alert("Registration successful! Check your email.");
+        accountType: authTier,
+        companyName: authCorpName,
+        tinNumber: authCorpTin
+      };
+      setCurrentUser(newUser);
+      setProcurementMode(authTier);
+      if (authTier === 'corporate') {
+        setCorpDetails({ companyName: authCorpName, tinNumber: authCorpTin, poNumber: '' });
+      }
     } else {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const mockUser = {
+        name: authEmail ? authEmail.split('@')[0] : 'Builder',
         email: authEmail,
-        password: authPassword,
-      });
-      if (error) alert("Invalid credentials: " + error.message);
-      else setCurrentUser(data.user);
+        accountType: 'individual'
+      };
+      setCurrentUser(mockUser);
     }
     setShowAuthModal(false);
   };
-
-  // ... [KEEP ALL YOUR EXISTING PRODUCT CATALOG AND UI CODE BELOW THIS LINE] ...
-  // (Paste everything from your original file starting from 'const [products, setProducts]' down to the end)
-}
 
   const handleLogout = () => {
     setCurrentUser(null);
