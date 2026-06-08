@@ -50,7 +50,7 @@ export default function Home() {
   const handleAuthSubmit = (e) => {
     e.preventDefault();
     if (authView === 'register') {
-      const newUser = {
+      const newUser = {alert('Success! Your account has been registered.');
         name: authName || authEmail.split('@')[0] || 'User',
         email: authEmail,
         accountType: authTier,
