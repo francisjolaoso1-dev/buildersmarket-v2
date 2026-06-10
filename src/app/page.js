@@ -2,28 +2,26 @@
 import { useState } from 'react';
 
 export default function Home() {
-  // Navigation & View States
+  // ==========================================
+  // 1. ALL STATES (YOUR APP MEMORY)
+  // ==========================================
   const [activeTab, setActiveTab] = useState('market');
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState('NGN'); 
   const [selectedCategory, setSelectedCategory] = useState('All');
   
-  // Modal & Tracking States
   const [showModal, setShowModal] = useState(false);
   const [modalItem, setModalItem] = useState(null);
   const [invoiceConfirmed, setInvoiceConfirmed] = useState(false);
   const [trackingStep, setTrackingStep] = useState(1); 
   const [procurementMode, setProcurementMode] = useState('individual');
 
-  // Corporate Specific States
   const [corpDetails, setCorpDetails] = useState({ companyName: '', tinNumber: '', poNumber: '' });
 
-  // AUTHENTICATION STATES
   const [currentUser, setCurrentUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authView, setAuthView] = useState('login');
   
-  // Auth Form State Explicitly Separated for Stability
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [authName, setAuthName] = useState('');
@@ -31,14 +29,14 @@ export default function Home() {
   const [authCorpName, setAuthCorpName] = useState('');
   const [authCorpTin, setAuthCorpTin] = useState('');
 
-  // Product Catalog State
+  // Your list of items on display
   const [products, setProducts] = useState([
     { id: 1, name: 'Industrial Borehole Submersible Pump (2HP)', category: 'Plumbing', ngn: '₦210,000', usd: '$131.00', dutyNgn: '₦14,700', dutyUsd: '$9.17', totalNgn: '₦224,700', totalUsd: '$140.17', origin: 'Guangdong Shipping Depot', type: 'CHINA IMPORTED', color: '#e53e3e', bg: '#fff5f5', icon: '🚰' },
     { id: 2, name: 'Premium Aluminum Roofing Sheets (0.55mm)', category: 'Aluminum', ngn: '₦85,000', usd: '$53.00', dutyNgn: '₦5,950', dutyUsd: '$3.71', totalNgn: '₦90,950', totalUsd: '$56.71', origin: 'Abuja Central Warehouse', type: 'LOCAL DISTRIBUTOR', color: '#16a34a', bg: '#f0fdf4', icon: '🏠' },
     { id: 3, name: 'Luxury Smart Space Capsule House (V8-Series)', category: 'Prefab Structural', ngn: '₦44,800,000', usd: '$28,000.00', dutyNgn: '₦3,136,000', dutyUsd: '$1,960.00', totalNgn: '₦47,936,000', totalUsd: '$29,960.00', origin: 'Foshan Prefab Industry Zone', type: 'CHINA IMPORTED', color: '#2563eb', bg: '#eff6ff', icon: '🚀' },
     { id: 4, name: 'Premium Capsule Interior Fit-Out & Concept Design', category: 'Architectural Design', ngn: '₦2,400,000', usd: '$1,500.00', dutyNgn: '₦0', dutyUsd: '$0', totalNgn: '₦2,400,000', totalUsd: '$1,500.00', origin: 'Digital Delivery Hub', type: 'DESIGN PACKAGE', color: '#7c3aed', bg: '#f5f3ff', icon: '🛋️' },
     { id: 5, name: 'Heavy Industrial Borehole Drilling Rig Bit (9 7/8")', category: 'Drilling', ngn: '₦720,000', usd: '$450.00', dutyNgn: '₦50,400', dutyUsd: '$31.50', totalNgn: '₦770,400', totalUsd: '$481.50', origin: 'Tianjin Manufacturing Zone', type: 'CHINA IMPORTED', color: '#e53e3e', bg: '#fff5f5', icon: '⚙️' },
-    { id: 6, name: 'High-Grade Structural Steel H-Beams (Bulk)', category: 'Structural Materials', ngn: '₦340,000', usd: '$212.00', dutyNgn: '₦23,800', dutyUsd: '$14.84', totalNgn: '₦363,800', totalUsd: '$226.84', origin: 'Lagos Port Depot', type: 'LOCAL DISTRIBUTOR', color: '#16a34a', bg: '#f0fdf4', icon: '🏗️' }
+    { id: 6, name: 'High-Grade Structural Steel H-Beams (Bulk)', category: 'Structural Materials', ngn: '₦340,000', usd: '$212.00', dutyNgn: '₦23,800', dutyUsd: '#14.84', totalNgn: '₦363,800', totalUsd: '$226.84', origin: 'Lagos Port Depot', type: 'LOCAL DISTRIBUTOR', color: '#16a34a', bg: '#f0fdf4', icon: '🏗️' }
   ]);
 
   const [formName, setFormName] = useState('');
@@ -47,6 +45,9 @@ export default function Home() {
   const [formOrigin, setFormOrigin] = useState('');
   const [formType, setFormType] = useState('CHINA IMPORTED');
 
+  // ==========================================
+  // 2. FUNCTIONS (THE BRAINS)
+  // ==========================================
   const handleAuthSubmit = (e) => {
     e.preventDefault();
     if (authView === 'register') {
@@ -124,6 +125,9 @@ export default function Home() {
   const label3 = isDesign ? '3. Review' : '3. Clearing';
   const label4 = isDesign ? '4. Sent' : '4. Arrived';
 
+  // ==========================================
+  // 3. VISUAL INTERFACE (THE LOOKS)
+  // ==========================================
   return (
     <div style={{ fontFamily: 'system-ui, sans-serif', backgroundColor: '#f9fafb', minHeight: '100vh', color: '#111827' }}>
       
@@ -182,7 +186,7 @@ export default function Home() {
             </div>
           </section>
 
-          {/* GRID DISPLAY */}
+          {/* MARKETPLACE INVENTORY GRID */}
           <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '25px' }}>
               {filteredProducts.map((product) => (
@@ -203,13 +207,26 @@ export default function Home() {
                       <span style={{ fontSize: '16px', fontWeight: '800', color: '#111827' }}>{viewMode === 'NGN' ? product.ngn : product.usd}</span>
                       <span style={{ fontSize: '11px', color: '#6b7280', display: 'block' }}>FOB Base Price</span>
                     </div>
-                    <button onClick={() => { 
-                      setModalItem(product); 
-                      setInvoiceConfirmed(false); 
-                      setTrackingStep(1); 
-                      setProcurementMode(currentUser ? currentUser.accountType : 'individual');
-                      setShowModal(true); 
-                    }} style={{ backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '9px 14px', borderRadius: '6px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}>Request Invoice</button>
+                    
+                    {/* BUTTONS STACKED CLEANLY */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <button onClick={() => { 
+                        setModalItem(product); 
+                        setInvoiceConfirmed(false); 
+                        setTrackingStep(1); 
+                        setProcurementMode(currentUser ? currentUser.accountType : 'individual');
+                        setShowModal(true); 
+                      }} style={{ backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '9px 14px', borderRadius: '6px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}>
+                        Request Invoice
+                      </button>
+                      
+                      <button 
+                        onClick={() => setProducts(products.filter(p => p.id !== product.id))}
+                        style={{ backgroundColor: '#fee2e2', color: '#ef4444', border: '1px solid #fca5a5', padding: '5px 14px', borderRadius: '6px', fontWeight: '600', fontSize: '11px', cursor: 'pointer' }}
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -217,7 +234,7 @@ export default function Home() {
           </main>
         </>
       ) : (
-        /* FACTORY PORTAL */
+        /* FACTORY PORTAL TAB */
         <main style={{ maxWidth: '540px', margin: '40px auto', padding: '30px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
           <h2 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '4px' }}>Global Asset Onboarding</h2>
           <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '20px' }}>Deploy blueprints or equipment directly to the front-facing matrix.</p>
@@ -246,12 +263,11 @@ export default function Home() {
         </main>
       )}
 
-      {/* SIGN IN & REGISTRATION MODAL OVERLAY */}
+      {/* REGISTRATION MODAL */}
       {showAuthModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(11,24,39,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }}>
           <div style={{ backgroundColor: '#ffffff', padding: '30px', borderRadius: '12px', maxWidth: '400px', width: '100%', margin: '20px', position: 'relative' }}>
             <button onClick={() => setShowAuthModal(false)} style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', color: '#9ca3af' }}>✕</button>
-            
             <h3 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '5px', textAlign: 'center' }}>
               {authView === 'login' ? 'Access Portal Gateway' : 'Create Procurement Profile'}
             </h3>
@@ -266,12 +282,10 @@ export default function Home() {
                   <input type="text" required placeholder="Francis Jolaoso" value={authName} onChange={(e) => setAuthName(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }} />
                 </div>
               )}
-
               <div>
                 <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', marginBottom: '4px' }}>Email Address</label>
                 <input type="email" required placeholder="name@domain.com" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }} />
               </div>
-
               <div>
                 <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', marginBottom: '4px' }}>Password</label>
                 <input type="password" required placeholder="••••••••" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }} />
@@ -286,7 +300,6 @@ export default function Home() {
                       <option value="corporate">🏢 Corporate Firm/Company Account</option>
                     </select>
                   </div>
-
                   {authTier === 'corporate' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '10px', backgroundColor: '#f0fdf4', borderRadius: '6px', border: '1px dashed #16a34a' }}>
                       <input type="text" placeholder="Registered Company Name" required={authTier === 'corporate'} value={authCorpName} onChange={(e) => setAuthCorpName(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }} />
@@ -295,7 +308,6 @@ export default function Home() {
                   )}
                 </>
               )}
-
               <button type="submit" style={{ width: '100%', backgroundColor: '#16a34a', color: '#fff', border: 'none', padding: '12px', borderRadius: '6px', fontWeight: '700', fontSize: '14px', cursor: 'pointer', marginTop: '5px' }}>
                 {authView === 'login' ? 'Authenticate Entry' : 'Register Profile Matrix'}
               </button>
@@ -312,7 +324,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* DUAL MODE PROCUREMENT OVERLAY MODAL */}
+      {/* PROCUREMENT TRACKING MODAL */}
       {showModal && modalItem && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(11,24,39,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div style={{ backgroundColor: '#ffffff', padding: '25px', borderRadius: '12px', maxWidth: '460px', width: '100%', margin: '20px', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
@@ -323,13 +335,11 @@ export default function Home() {
                 <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '4px' }}>Proforma Pricing Sheet</h3>
                 <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '15px' }}>Select profile context below to streamline settlement documentation.</p>
                 
-                {/* PROFILE TOGGLE */}
                 <div style={{ display: 'flex', backgroundColor: '#f3f4f6', borderRadius: '8px', padding: '4px', marginBottom: '15px' }}>
                   <button type="button" onClick={() => setProcurementMode('individual')} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', backgroundColor: procurementMode === 'individual' ? '#ffffff' : 'transparent', color: procurementMode === 'individual' ? '#111827' : '#6b7280' }}>👤 Individual Client</button>
                   <button type="button" onClick={() => setProcurementMode('corporate')} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', backgroundColor: procurementMode === 'corporate' ? '#ffffff' : 'transparent', color: procurementMode === 'corporate' ? '#111827' : '#6b7280' }}>🏢 Corporate / Firm</button>
                 </div>
 
-                {/* DYNAMIC CORPORATE DATA INPUT */}
                 {procurementMode === 'corporate' && (
                   <div style={{ padding: '12px', borderRadius: '8px', border: '1px dashed #16a34a', backgroundColor: '#f0fdf4', marginBottom: '15px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <span style={{ fontSize: '11px', fontWeight: '800', color: '#16a34a', textTransform: 'uppercase' }}>Corporate Validation Fields</span>
@@ -371,7 +381,6 @@ export default function Home() {
                   Account Assignment: <strong style={{ color: '#111827' }}>{procurementMode === 'corporate' ? corpDetails.companyName || 'Corporate Account' : (currentUser ? currentUser.name : 'Individual Builder')}</strong>
                 </p>
 
-                {/* TRACKING PATHWAYS */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '4px', marginBottom: '25px' }}>
                   <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 1 ? '#16a34a' : '#e5e7eb' }} />
                   <div style={{ flex: 1, height: '6px', borderRadius: '4px', backgroundColor: trackingStep >= 2 ? '#16a34a' : '#e5e7eb' }} />
@@ -392,30 +401,33 @@ export default function Home() {
                       {trackingStep === 1 && <div>🏭 <strong>Stage 1: Factory Production</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Your materials are currently being crated and serialized for container logistics.</p></div>}
                       {trackingStep === 2 && <div>🚢 <strong>Stage 2: Ocean Freight Transit</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Cargo moving securely across main shipping corridors toward the entry port.</p></div>}
                       {trackingStep === 3 && <div>🛃 <strong>Stage 3: Customs Duty Clearing</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Port tariff calculations and official manifest matching are undergoing approval.</p></div>}
-                      {trackingStep === 4 && <div>✅ <strong>Stage 4: Ready for Delivery</strong><p style={{ margin: '4px 0 0', color: '#16a34a', fontSize: '12px', fontWeight: '600' }}>Clearance complete! Items are ready for site dispatch or terminal pickup.</p></div>}
+                      {trackingStep === 4 && <div>✅ <strong>Stage 4: Ready for Delivery</strong><p style={{ margin: '4px 0 0', color: '#16a34a', fontSize: '12px' }}>Cargo arrived at local distribution node. Ready for site dispatch.</p></div>}
                     </div>
                   ) : (
                     <div>
-                      {trackingStep === 1 && <div>✏️ <strong>Stage 1: Spatial Drafting</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Translating space shell boundaries into raw structural framing layout lines.</p></div>}
-                      {trackingStep === 2 && <div>🖼️ <strong>Stage 2: High-Fidelity Rendering</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Material shaders and lighting profiles are being cooked into realistic 3D imagery.</p></div>}
-                      {trackingStep === 3 && <div>🔄 <strong>Stage 3: Quality Compliance</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Reviewing configurations against structural constraints to guarantee building fit.</p></div>}
-                      {trackingStep === 4 && <div>📩 <strong>Stage 4: Packages Dispatched</strong><p style={{ margin: '4px 0 0', color: '#16a34a', fontSize: '12px', fontWeight: '600' }}>High-resolution schematic plans and vector documents pushed straight to your profile portal email.</p></div>}
+                      {trackingStep === 1 && <div>✏️ <strong>Stage 1: Structural Drafting</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Architects are drafting your custom space capsule interior spatial blueprints.</p></div>}
+                      {trackingStep === 2 && <div>🖥️ <strong>Stage 2: 3D High-Fidelity Rendering</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Generating full lighting and contextual layout renders for client validation.</p></div>}
+                      {trackingStep === 3 && <div>📋 <strong>Stage 3: Engineering Review</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Checking weight distributions, load bearings, and plumbing schematic match-ups.</p></div>}
+                      {trackingStep === 4 && <div>✅ <strong>Stage 4: Digital Handover</strong><p style={{ margin: '4px 0 0', color: '#16a34a', fontSize: '12px', fontWeight: '600' }}>Design package finalized and exported for site implementation.</p></div>}
                     </div>
                   )}
                 </div>
-
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-                  <button disabled={trackingStep === 1} onClick={() => setTrackingStep(prev => prev - 1)} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #d1d5db', cursor: 'pointer', fontSize: '12px', fontWeight: '600', backgroundColor: '#fff' }}>⏮️ Prev Stage</button>
-                  <button disabled={trackingStep === 4} onClick={() => setTrackingStep(prev => prev + 1)} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: '600', backgroundColor: '#111827', color: '#fff' }}>Next Stage ⏭️</button>
+                
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button 
+                    onClick={() => setTrackingStep(prev => Math.min(prev + 1, 4))} 
+                    disabled={trackingStep === 4}
+                    style={{ flex: 1, backgroundColor: '#111827', color: '#fff', border: 'none', padding: '10px', borderRadius: '6px', cursor: 'pointer' }}
+                  >
+                    {trackingStep === 4 ? 'Order Complete' : 'Advance Stage'}
+                  </button>
+                  <button onClick={() => setShowModal(false)} style={{ padding: '10px 20px', borderRadius: '6px', border: '1px solid #d1d5db', background: 'none', cursor: 'pointer' }}>Close</button>
                 </div>
-
-                <button onClick={() => setShowModal(false)} style={{ width: '100%', backgroundColor: '#6b7280', color: 'white', padding: '10px', borderRadius: '6px', fontWeight: '600', border: 'none', cursor: 'pointer', fontSize: '13px' }}>Close Console</button>
               </>
             )}
           </div>
         </div>
       )}
-
     </div>
   );
 }
