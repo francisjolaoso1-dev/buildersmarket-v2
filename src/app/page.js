@@ -191,7 +191,29 @@ Direct pipeline for heavy machinery, prefabricated houses, and premium interior/
 </select>
 </div>
 </section>
-{/* MARKETPLACE CARDS GRID */}
+{/* PLATFORM EXPLANATION */}
+<section style={{ padding: '40px 20px', backgroundColor: '#ffffff', textAlign: 'center' }}>
+  <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <h2 style={{ fontSize: '28px', color: '#111827', marginBottom: '15px' }}>Why BuildersMarket?</h2>
+    <p style={{ fontSize: '16px', color: '#4b5563', lineHeight: '1.6' }}>
+      BuildersMarket serves as your digital bridge to the global manufacturing hub. We bypass traditional, fragmented supply chains by connecting African developers, contractors, and individuals directly to high-grade industrial machinery, modular housing components, and premium design services. 
+    </p>
+    <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', marginTop: '25px' }}>
+      <div>
+        <h4 style={{ color: '#16a34a' }}>Direct Sourcing</h4>
+        <p style={{ fontSize: '13px', color: '#6b7280' }}>Factory-to-site pricing.</p>
+      </div>
+      <div>
+        <h4 style={{ color: '#16a34a' }}>Verified Logistics</h4>
+        <p style={{ fontSize: '13px', color: '#6b7280' }}>End-to-end tracking.</p>
+      </div>
+      <div>
+        <h4 style={{ color: '#16a34a' }}>Design-Led</h4>
+        <p style={{ fontSize: '13px', color: '#6b7280' }}>Architectural integrity.</p>
+      </div>
+    </div>
+  </div>
+</section>{/* MARKETPLACE CARDS GRID */}
 <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '25px' }}>
 {sortedAndFilteredProducts.map((product) => (
