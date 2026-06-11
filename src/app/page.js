@@ -183,15 +183,6 @@ Direct pipeline for heavy machinery, prefabricated houses, and premium interior/
 <option value="Plumbing">Industrial Plumbing</option>
 <option value="Aluminum">Aluminum Products</option>
 </select>
-{/* PLATFORM EXPLANATION */}
-<section style={{ padding: '40px 20px', backgroundColor: '#ffffff', textAlign: 'center' }}>
-  <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-    <h2 style={{ fontSize: '28px', color: '#111827', marginBottom: '15px' }}>Why BuildersMarket?</h2>
-    <p style={{ fontSize: '16px', color: '#4b5563', lineHeight: '1.6' }}>
-      BuildersMarket serves as your digital bridge to the global manufacturing hub. We bypass traditional, fragmented supply chains by connecting African developers, contractors, and individuals directly to high-grade industrial machinery, modular housing components, and premium design services. 
-    </p>
-  </div>
-</section>
 {/* BRAND NEW: SORT DROPDOWN ADDED HERE */}
 <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={{ flex: 1, padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '14px', backgroundColor: '#f9fafb', color: '#111827', cursor: 'pointer' }}>
 <option value="default">Sort by Price</option>
