@@ -14,15 +14,11 @@ const INITIAL_PRODUCTS = [
 ];
 
 export default function Home() {
-  // ==========================================
-  // SEGMENT 2: APP MEMORY (STATES)
-  // ==========================================
   const [activeTab, setActiveTab] = useState('market');
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState('NGN');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortOrder, setSortOrder] = useState('default'); 
-
   const [showModal, setShowModal] = useState(false);
   const [modalItem, setModalItem] = useState(null);
   const [invoiceConfirmed, setInvoiceConfirmed] = useState(false);
@@ -32,7 +28,6 @@ export default function Home() {
   const [currentUser, setCurrentUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authView, setAuthView] = useState('login');
-
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [authName, setAuthName] = useState('');
@@ -46,44 +41,21 @@ export default function Home() {
   const [formOrigin, setFormOrigin] = useState('');
   const [formType, setFormType] = useState('CHINA IMPORTED');
 
-  // ==========================================
-  // SEGMENT 3: ACTION ENGINE (FUNCTIONS)
-  // ==========================================
   const handleAuthSubmit = (e) => {
     e.preventDefault();
     if (authView === 'register') {
-      const newUser = {
-        name: authName || authEmail.split('@')[0] || 'User',
-        email: authEmail,
-        accountType: authTier,
-        companyName: authCorpName,
-        tinNumber: authCorpTin
-      };
+      const newUser = { name: authName || authEmail.split('@')[0] || 'User', email: authEmail, accountType: authTier, companyName: authCorpName, tinNumber: authCorpTin };
       setCurrentUser(newUser);
       setProcurementMode(authTier);
-      if (authTier === 'corporate') {
-        setCorpDetails({ companyName: authCorpName, tinNumber: authCorpTin, poNumber: '' });
-      }
+      if (authTier === 'corporate') setCorpDetails({ companyName: authCorpName, tinNumber: authCorpTin, poNumber: '' });
     } else {
-      const mockUser = {
-        name: authEmail ? authEmail.split('@')[0] : 'Builder',
-        email: authEmail,
-        accountType: 'individual'
-      };
-      setCurrentUser(mockUser);
+      setCurrentUser({ name: authEmail ? authEmail.split('@')[0] : 'Builder', email: authEmail, accountType: 'individual' });
     }
     setShowAuthModal(false);
   };
 
-  const handleLogout = () => {
-    setCurrentUser(null);
-    setCorpDetails({ companyName: '', tinNumber: '', poNumber: '' });
-    setProcurementMode('individual');
-  };
-
-  const deleteProduct = (id) => {
-    setProducts(products.filter(p => p.id !== id));
-  };
+  const handleLogout = () => { setCurrentUser(null); setCorpDetails({ companyName: '', tinNumber: '', poNumber: '' }); setProcurementMode('individual'); };
+  const deleteProduct = (id) => setProducts(products.filter(p => p.id !== id));
 
   const filteredProducts = products.filter(product => {
     const pName = product.name ? product.name.toLowerCase() : '';
@@ -114,13 +86,7 @@ export default function Home() {
     if (formCategory === 'Architectural Design') defaultIcon = ' 📐 ';
     if (formCategory === 'Drilling') defaultIcon = ' ⚙ ️';
     if (formCategory === 'Plumbing') defaultIcon = ' 🚰 ';
-    const newAsset = {
-      id: Date.now(), name: formName, category: formCategory,
-      ngn: `₦${baseNgnNum.toLocaleString()}`, usd: `$${baseUsdNum.toLocaleString()}`,
-      dutyNgn: `₦${calculatedDutyNgn.toLocaleString()}`, dutyUsd: `$${calculatedDutyUsd.toLocaleString()}`,
-      totalNgn: `₦${totalNgnNum.toLocaleString()}`, totalUsd: `$${totalUsdNum.toLocaleString()}`,
-      origin: formOrigin, type: formType, color: themeColor, bg: themeBg, icon: defaultIcon
-    };
+    const newAsset = { id: Date.now(), name: formName, category: formCategory, ngn: `₦${baseNgnNum.toLocaleString()}`, usd: `$${baseUsdNum.toLocaleString()}`, dutyNgn: `₦${calculatedDutyNgn.toLocaleString()}`, dutyUsd: `$${calculatedDutyUsd.toLocaleString()}`, totalNgn: `₦${totalNgnNum.toLocaleString()}`, totalUsd: `$${totalUsdNum.toLocaleString()}`, origin: formOrigin, type: formType, color: themeColor, bg: themeBg, icon: defaultIcon };
     setProducts([newAsset, ...products]);
     setFormName(''); setFormBaseNgn(''); setFormOrigin('');
     setActiveTab('market');
@@ -132,28 +98,23 @@ export default function Home() {
   const label3 = isDesign ? '3. Review' : '3. Clearing';
   const label4 = isDesign ? '4. Sent' : '4. Arrived';
 
-  // ==========================================
-  // SEGMENT 4: MAIN LAYOUT DISPLAY
-  // ==========================================
   return (
     <div style={{ fontFamily: 'system-ui, sans-serif', backgroundColor: '#f9fafb', minHeight: '100vh', color: '#111827' }}>
       <header style={{ backgroundColor: '#ffffff', borderBottom: '1px solid #e5e7eb', padding: '15px 30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{ fontSize: '26px' }}> 🏗 ️</span>
-          <div style={{ fontSize: '22px', fontWeight: '800', color: '#16a34a' }}>
-            builders<span style={{ color: '#111827' }}>market</span>
-          </div>
+          <div style={{ fontSize: '22px', fontWeight: '800', color: '#16a34a' }}>builders<span style={{ color: '#111827' }}>market</span></div>
         </div>
         <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
           <button onClick={() => setActiveTab('market')} style={{ background: 'none', border: 'none', color: activeTab === 'market' ? '#16a34a' : '#4b5563', fontWeight: '600', cursor: 'pointer' }}>Marketplace</button>
-          <button onClick={() => setActiveTab('supplier')} style={{ background: 'none', border: 'none', color: activeTab === 'supplier' ? '#16a34a' : '#4b5563', fontWeight: '600', cursor: 'pointer' }}> 🇨🇳  Factory Portal</button>
+          <button onClick={() => setActiveTab('supplier')} style={{ background: 'none', border: 'none', color: activeTab === 'supplier' ? '#16a34a' : '#4b5563', fontWeight: '600', cursor: 'pointer' }}> 🇨🇳 Factory Portal</button>
           <div style={{ border: '1px solid #d1d5db', borderRadius: '20px', padding: '3px', display: 'flex', backgroundColor: '#f3f4f6', marginRight: '5px' }}>
             <button onClick={() => setViewMode('NGN')} style={{ border: 'none', padding: '5px 12px', borderRadius: '16px', cursor: 'pointer', fontWeight: '700', fontSize: '12px', backgroundColor: viewMode === 'NGN' ? '#111827' : 'transparent', color: viewMode === 'NGN' ? '#ffffff' : '#4b5563' }}>₦ NGN</button>
             <button onClick={() => setViewMode('USD')} style={{ border: 'none', padding: '5px 12px', borderRadius: '16px', cursor: 'pointer', fontWeight: '700', fontSize: '12px', backgroundColor: viewMode === 'USD' ? '#111827' : 'transparent', color: viewMode === 'USD' ? '#ffffff' : '#4b5563' }}>$ USD</button>
           </div>
           {currentUser ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderLeft: '1px solid #e5e7eb', paddingLeft: '15px' }}>
-              <span style={{ fontSize: '13px', fontWeight: '600' }}> 👋  {currentUser.name} <span style={{ fontSize: '10px', backgroundColor: currentUser.accountType === 'corporate' ? '#dbffe4' : '#e5e7eb', color: currentUser.accountType === 'corporate' ? '#15803d' : '#111827', padding: '2px 6px', borderRadius: '10px', marginLeft: '4px', fontWeight: '800' }}>{(currentUser.accountType || 'individual').toUpperCase()}</span></span>
+              <span style={{ fontSize: '13px', fontWeight: '600' }}> 👋 {currentUser.name} <span style={{ fontSize: '10px', backgroundColor: currentUser.accountType === 'corporate' ? '#dbffe4' : '#e5e7eb', color: currentUser.accountType === 'corporate' ? '#15803d' : '#111827', padding: '2px 6px', borderRadius: '10px', marginLeft: '4px', fontWeight: '800' }}>{(currentUser.accountType || 'individual').toUpperCase()}</span></span>
               <button onClick={handleLogout} style={{ background: 'none', border: '1px solid #d1d5db', padding: '5px 10px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', fontWeight: '600' }}>Logout</button>
             </div>
           ) : (
@@ -194,7 +155,7 @@ export default function Home() {
                   <div style={{ padding: '20px', flexGrow: 1 }}>
                     <span style={{ fontSize: '10px', textTransform: 'uppercase', color: '#4b5563', fontWeight: '700', backgroundColor: '#e5e7eb', padding: '3px 6px', borderRadius: '4px' }}>{product.category}</span>
                     <h3 style={{ fontSize: '15px', fontWeight: '700', marginTop: '10px', marginBottom: '6px', minHeight: '42px' }}>{product.name}</h3>
-                    <div style={{ fontSize: '13px', color: '#6b7280' }}> 📍  Fulfillment: <strong>{product.origin}</strong></div>
+                    <div style={{ fontSize: '13px', color: '#6b7280' }}> 📍 Fulfillment: <strong>{product.origin}</strong></div>
                   </div>
                   <div style={{ padding: '0 20px 20px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f3f4f6', paddingTop: '15px' }}>
                     <div>
@@ -265,8 +226,8 @@ export default function Home() {
                   <div>
                     <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', marginBottom: '4px' }}>Profile Procurement Tier</label>
                     <select value={authTier} onChange={(e) => setAuthTier(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box', backgroundColor: '#fff' }}>
-                      <option value="individual"> 👤  Individual Builder Account</option>
-                      <option value="corporate"> 🏢  Corporate Firm/Company Account</option>
+                      <option value="individual"> 👤 Individual Builder Account</option>
+                      <option value="corporate"> 🏢 Corporate Firm/Company Account</option>
                     </select>
                   </div>
                   {authTier === 'corporate' && (
@@ -298,8 +259,8 @@ export default function Home() {
                 <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '4px' }}>Proforma Pricing Sheet</h3>
                 <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '15px' }}>Select profile context below to streamline settlement documentation.</p>
                 <div style={{ display: 'flex', backgroundColor: '#f3f4f6', borderRadius: '8px', padding: '4px', marginBottom: '15px' }}>
-                  <button type="button" onClick={() => setProcurementMode('individual')} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', backgroundColor: procurementMode === 'individual' ? '#ffffff' : 'transparent', color: procurementMode === 'individual' ? '#111827' : '#6b7280' }}> 👤  Individual Client</button>
-                  <button type="button" onClick={() => setProcurementMode('corporate')} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', backgroundColor: procurementMode === 'corporate' ? '#ffffff' : 'transparent', color: procurementMode === 'corporate' ? '#111827' : '#6b7280' }}> 🏢  Corporate / Firm</button>
+                  <button type="button" onClick={() => setProcurementMode('individual')} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', backgroundColor: procurementMode === 'individual' ? '#ffffff' : 'transparent', color: procurementMode === 'individual' ? '#111827' : '#6b7280' }}> 👤 Individual Client</button>
+                  <button type="button" onClick={() => setProcurementMode('corporate')} style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', fontSize: '13px', fontWeight: '700', cursor: 'pointer', backgroundColor: procurementMode === 'corporate' ? '#ffffff' : 'transparent', color: procurementMode === 'corporate' ? '#111827' : '#6b7280' }}> 🏢 Corporate / Firm</button>
                 </div>
                 {procurementMode === 'corporate' && (
                   <div style={{ padding: '12px', borderRadius: '8px', border: '1px dashed #16a34a', backgroundColor: '#f0fdf4', marginBottom: '15px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -349,17 +310,17 @@ export default function Home() {
                 <div style={{ backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', padding: '15px', borderRadius: '8px', marginBottom: '25px', fontSize: '13px' }}>
                   {!isDesign ? (
                     <div>
-                      {trackingStep === 1 && <div> 🏭  <strong>Stage 1: Factory Production</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Your materials are currently being crated and serialized for container logistics.</p></div>}
-                      {trackingStep === 2 && <div> 🚢  <strong>Stage 2: Ocean Freight Transit</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Cargo moving securely across main shipping corridors toward the entry port.</p></div>}
-                      {trackingStep === 3 && <div> 🛃  <strong>Stage 3: Customs Duty Clearing</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Port tariff calculations and official manifest matching are undergoing approval.</p></div>}
-                      {trackingStep === 4 && <div> ✅  <strong>Stage 4: Ready for Delivery</strong><p style={{ margin: '4px 0 0', color: '#16a34a', fontSize: '12px' }}>Cargo arrived at local distribution node. Ready for site dispatch.</p></div>}
+                      {trackingStep === 1 && <div> 🏭 <strong>Stage 1: Factory Production</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Your materials are currently being crated and serialized for container logistics.</p></div>}
+                      {trackingStep === 2 && <div> 🚢 <strong>Stage 2: Ocean Freight Transit</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Cargo moving securely across main shipping corridors toward the entry port.</p></div>}
+                      {trackingStep === 3 && <div> 🛃 <strong>Stage 3: Customs Duty Clearing</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Port tariff calculations and official manifest matching are undergoing approval.</p></div>}
+                      {trackingStep === 4 && <div> ✅ <strong>Stage 4: Ready for Delivery</strong><p style={{ margin: '4px 0 0', color: '#16a34a', fontSize: '12px' }}>Cargo arrived at local distribution node. Ready for site dispatch.</p></div>}
                     </div>
                   ) : (
                     <div>
                       {trackingStep === 1 && <div> ✏ ️ <strong>Stage 1: Structural Drafting</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Architects are drafting your custom space capsule interior spatial blueprints.</p></div>}
                       {trackingStep === 2 && <div> 🖥 ️ <strong>Stage 2: 3D High-Fidelity Rendering</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Generating full lighting and contextual layout renders for client validation.</p></div>}
-                      {trackingStep === 3 && <div> 📋  <strong>Stage 3: Engineering Review</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Checking weight distributions, load bearings, and plumbing schematic match-ups.</p></div>}
-                      {trackingStep === 4 && <div> ✅  <strong>Stage 4: Digital Handover</strong><p style={{ margin: '4px 0 0', color: '#16a34a', fontSize: '12px', fontWeight: '600' }}>Design package finalized and exported for site implementation.</p></div>}
+                      {trackingStep === 3 && <div> 📋 <strong>Stage 3: Engineering Review</strong><p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '12px' }}>Checking weight distributions, load bearings, and plumbing schematic match-ups.</p></div>}
+                      {trackingStep === 4 && <div> ✅ <strong>Stage 4: Digital Handover</strong><p style={{ margin: '4px 0 0', color: '#16a34a', fontSize: '12px', fontWeight: '600' }}>Design package finalized and exported for site implementation.</p></div>}
                     </div>
                   )}
                 </div>
