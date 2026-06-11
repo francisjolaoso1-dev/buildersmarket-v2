@@ -167,7 +167,9 @@ builders<span style={{ color: '#111827' }}>market</span>
 <>
 {/* HERO BAR & FILTERS */}
 <section style={{ backgroundColor: '#111827', color: '#ffffff', padding: '50px 20px', textAlign: 'center' }}>
-<h1 style={{ fontSize: '34px', fontWeight: '800', marginBottom: '10px' }}>Global Procurement Matrix</h1>
+<h1 style={{ fontSize: '34px', fontWeight: '800', marginBottom: '10px' }}>Global Procurement Matrix</h1><p style={{ fontSize: '18px', fontWeight: '500', color: '#16a34a', marginBottom: '15px' }}>
+    Africa's marketplace for Building Materials, machinery & Construction Services.
+  </p>
 <p style={{ fontSize: '15px', color: '#9ca3af', maxWidth: '650px', margin: '0 auto 25px' }}>
 Direct pipeline for heavy machinery, prefabricated houses, and premium interior/exterior designs.
 </p>
@@ -182,7 +184,35 @@ Direct pipeline for heavy machinery, prefabricated houses, and premium interior/
 <option value="Drilling">Borehole Drilling</option>
 <option value="Plumbing">Industrial Plumbing</option>
 <option value="Aluminum">Aluminum Products</option>
-</select>
+</select>{/* CATEGORY ICONS */}
+<section style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto' }}>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '15px', textAlign: 'center' }}>
+    {[
+      { name: 'Building Materials', icon: '🧱' },
+      { name: 'Heavy Equipment', icon: '🚜' },
+      { name: 'Prefab House', icon: '🏠' },
+      { name: 'Interior Finishing', icon: '🎨' },
+      { name: 'Electricals', icon: '⚡' },
+      { name: 'Tools & Hardware', icon: '🛠️' },
+      { name: 'Real Estate', icon: '🏢' }
+    ].map((cat) => (
+      <button key={cat.name} onClick={() => setSelectedCategory(cat.name)} style={{ background: '#fff', border: '1px solid #e5e7eb', padding: '15px', borderRadius: '12px', cursor: 'pointer' }}>
+        <span style={{ fontSize: '24px', display: 'block' }}>{cat.icon}</span>
+        {cat.name}
+      </button>
+    ))}
+  </div>
+</section>
+
+{/* PLATFORM EXPLANATION */}
+<section style={{ padding: '40px 20px', backgroundColor: '#ffffff', textAlign: 'center' }}>
+  <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <h2 style={{ fontSize: '28px', marginBottom: '15px' }}>Why BuildersMarket?</h2>
+    <p style={{ fontSize: '16px', color: '#4b5563' }}>
+      BuildersMarket serves as your digital bridge to the global manufacturing hub. We connect African developers and contractors directly to high-grade industrial machinery and building materials.
+    </p>
+  </div>
+</section>
 {/* BRAND NEW: SORT DROPDOWN ADDED HERE */}
 <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={{ flex: 1, padding: '11px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '14px', backgroundColor: '#f9fafb', color: '#111827', cursor: 'pointer' }}>
 <option value="default">Sort by Price</option>
