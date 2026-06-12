@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Header from './components/Header';
 // ==========================================
 // SEGMENT 1: STATIC DATA (EASY TO EDIT LIST)
 // ==========================================
