@@ -1,6 +1,6 @@
 export default function Hero({ searchTerm, setSearchTerm }) {
   return (
-    <section style={{ backgroundColor: '#111827', color: '#ffffff', padding: '50px 20px', textAlign: 'center' }}>
+    <Hero searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <h1 style={{ fontSize: '34px', fontWeight: '800', marginBottom: '10px' }}>Global Procurement Matrix</h1>
       <p style={{ fontSize: '15px', color: '#9ca3af', maxWidth: '650px', margin: '0 auto 25px' }}>Direct pipeline for heavy machinery and modular housing components.</p>
       <div style={{ backgroundColor: '#ffffff', padding: '10px', borderRadius: '12px', maxWidth: '820px', margin: '0 auto', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
